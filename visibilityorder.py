@@ -32,14 +32,35 @@ from javax.swing import JTree
 from java.awt import Dimension
 
 from javax.swing.border import EmptyBorder
+from java.awt.event import MouseAdapter
+from org.gvsig.fmap.mapcontext.events.listeners import ViewPortListener
 
 def setTreeAsVisibilityOrder(tree, mapContext):
   model = createTreeModel(mapContext)
   tree.setModel(model)
   tree.setCellRenderer(VisibilityCellRenderer(tree))
+  tree.addMouseListener(VisibilityMouseAdapter(tree,mapContext))
+  #vportlistener = VisibilityViewPortListener()
+  #mapContext.getViewPort().addViewPortListener(vportlistener)
   expandAllNodes(tree, 0, tree.getRowCount())
   
-  
+
+#TODO viewport class
+class VisibilityViewPortListener(ViewPortListener):
+  def __init__(self, mapContext):
+      self.mapContext = mapContext
+  # Metodo obligatorio de ViewPortListener
+  def backColorChanged(self,*args):
+      pass
+
+  # Metodo obligatorio de ViewPortListener
+  def extentChanged(self,*args):
+      setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.mapContext)
+
+  # Metodo obligatorio de ViewPortListener
+  def projectionChanged(self,*args):
+      pass
+      
 def expandAllNodes(tree, startingIndex, rowCount):
     for i in xrange(startingIndex,rowCount): 
         tree.expandRow(i)
@@ -67,7 +88,59 @@ def getIconFromLayer(layer):
     icon = iconTheme.get(iconName)
     return icon
   return None
-  
+
+class VisibilityMouseAdapter(MouseAdapter):
+    def __init__(self,tree,mapContext):
+        MouseAdapter.__init__(self)
+        self.tree = tree
+        self.mapContext = mapContext
+    def mouseClicked(self, event):
+        x = event.getX()
+        y = event.getY()
+        row = self.tree.getRowForLocation(x,y)
+        path = self.tree.getPathForRow(row)
+        print "mouseadapter:", x,y,row,path
+        if path == None or path.getPathCount() != 3:
+            return
+        node = path.getLastPathComponent()
+        layer = node.getUserObject().getLayer()
+        if x < 40:
+            return
+        if x < 60:
+            v = layer.isVisible()
+            layer.setVisible(not v)
+            # TODO set state model
+            #state = getExpansionState(self.tree)
+            model = createTreeModel(self.mapContext)
+            self.tree.setModel(model)
+            #setExpansionState(self.tree, state)
+            return
+        layer.setActive(not layer.isActive())
+        self.tree.getModel().reload()
+
+        #expandAllNodes(self.tree, 0, self.tree.getRowCount())
+        ## FPopupMenu basado en esta**
+        ## TODO SI ES CLICK DERECOH. en el evento
+        ## crear y mostrar las acciones
+        ## - almacenar las acciones y ordenarlas
+        ## - ordenar por y en ese order: action tiene el getGroupOrder(), getGroup(), getOrder()
+        ## - crear con el menu con separadores
+        ## menu.show(jtree, x, y)
+        
+        ## extra: habria que pasar todas las selecionadas. al mapcontext.getLayers().getActives()
+        
+            
+def getExpansionState(tree):
+    x = []
+    for i in range(0, tree.getRowCount()):
+        if tree.isExpanded(i):
+            x.append(tree.getPathForRow(i))
+    return x
+
+def setExpansionState(tree, x):
+    for i in x:
+        tree.expandPath(i)
+        
 class VisibilityCellRenderer(TreeCellRenderer):
     def __init__(self,tree):
         self.tree = tree
@@ -77,8 +150,6 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
         self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
         #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
-        print "GPF:", self.lblGroupPreferredSize.getHeight()
-
         self.pnlLayer = JPanel()
         self.pnlLayer.setOpaque(False)
         #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
@@ -101,10 +172,11 @@ class VisibilityCellRenderer(TreeCellRenderer):
             self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
             return self.lblGroup
         if isinstance(uo, DataLayer):
+            layer = uo.getLayer()
             self.lblLayerName.setText(uo.getName())
-            self.lblLayerIcon.setIcon(getIconFromLayer(uo.getLayer()))
-            self.chkLayerVisibility.setSelected(uo.getLayer().isVisible())
-            if selected:
+            self.lblLayerIcon.setIcon(getIconFromLayer(layer))
+            self.chkLayerVisibility.setSelected(layer.isVisible())
+            if layer.isActive():
                 font = self.lblLayerName.getFont()
                 #font = font.deriveFont(TextAttribute.WEIGHT,font.getSize2D())
                 
@@ -196,12 +268,7 @@ class DataLayer(object):
     return True
     
 def main(*args):
-
-    layer = gvsig.currentLayer()
-    print layer.getMinScale()
-    print layer.getMaxScale()
-    print layer.isVisible()
-    mapcontext = gvsig.currentView().getMapContext()
-    print layer.isWithinScale(mapcontext.getScaleView())
+    import tabbedtoc
+    tabbedtoc.main()
     
     

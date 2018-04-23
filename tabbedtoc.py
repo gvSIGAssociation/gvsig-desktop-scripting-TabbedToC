@@ -10,7 +10,6 @@ import sourceorder
 reload(sourceorder)
 
 from sourceorder import setTreeAsSourceOrder
-from org.gvsig.fmap.mapcontext.events.listeners import ViewPortListener
 
 #
 # http://desktop.arcgis.com/es/arcmap/10.3/map/working-with-arcmap/using-the-table-of-contents.htm
@@ -24,7 +23,7 @@ import selectionorder
 reload(selectionorder)
 from selectionorder import setTreeAsSelectionOrder
 
-class TabbedToC(FormPanel,Component,ViewPortListener):
+class TabbedToC(FormPanel,Component):
   def __init__(self):
     FormPanel.__init__(self,getResource(__file__,"tabbedtoc.xml"))
     self.tabTOC.setToolTipTextAt(0,"Lista por orden de dibujo")
@@ -54,20 +53,9 @@ class TabbedToC(FormPanel,Component,ViewPortListener):
     setTreeAsSelectionOrder(self.pnlTest, self.__mapContext)
     
     # Agregamos listener al ViewPort
-    self.__mapContext.getViewPort().addViewPortListener(self)
+    #self.__mapContext.getViewPort().addViewPortListener(self)
 
-    
-  # Metodo obligatorio de ViewPortListener
-  def backColorChanged(self,*args):
-      pass
 
-  # Metodo obligatorio de ViewPortListener
-  def extentChanged(self,*args):
-      setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
-
-  # Metodo obligatorio de ViewPortListener
-  def projectionChanged(self,*args):
-      pass
             
 def main(*args):
     panel = TabbedToC()
