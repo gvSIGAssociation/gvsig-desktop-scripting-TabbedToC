@@ -29,7 +29,7 @@ class TabbedToC(FormPanel,Component):
     self.tabTOC.setToolTipTextAt(0,"Lista por orden de dibujo")
     self.tabTOC.setToolTipTextAt(1,"Lista por fuente")
     self.tabTOC.setToolTipTextAt(2,"Lista por visibilidad")
-    self.tabTOC.setToolTipTextAt(3,unicode("Lista por selecci�n","utf-8"))
+    self.tabTOC.setToolTipTextAt(3,unicode("Lista por selección","utf-8"))
     self.__mapContext = None
     self.setPreferredSize(300,200)
 
