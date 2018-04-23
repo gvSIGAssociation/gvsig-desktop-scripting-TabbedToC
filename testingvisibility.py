@@ -26,20 +26,13 @@ from java.awt import Font
 
 from java.awt.font import TextAttribute
 
-from javax.swing import JTree
-
-    
-from java.awt import Dimension
-
-from javax.swing.border import EmptyBorder
-
 def setTreeAsVisibilityOrder(tree, mapContext):
+  ## tree as component
   model = createTreeModel(mapContext)
   tree.setModel(model)
-  tree.setCellRenderer(VisibilityCellRenderer(tree))
+  tree.setCellRenderer(VisibilityCellRenderer())
   expandAllNodes(tree, 0, tree.getRowCount())
-  
-  
+
 def expandAllNodes(tree, startingIndex, rowCount):
     for i in xrange(startingIndex,rowCount): 
         tree.expandRow(i)
@@ -69,20 +62,12 @@ def getIconFromLayer(layer):
   return None
   
 class VisibilityCellRenderer(TreeCellRenderer):
-    def __init__(self,tree):
-        self.tree = tree
+    def __init__(self):
         self.lblGroup = JLabel()
-        self.lblGroup.setBackground(Color(222,227,233)) #.BLUE.brighter())
+        self.lblGroup.setBackground(Color.LIGHT_GRAY)
         self.lblGroup.setOpaque(True)
-        self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
-        self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
-        #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
-        print "GPF:", self.lblGroupPreferredSize.getHeight()
-
         self.pnlLayer = JPanel()
         self.pnlLayer.setOpaque(False)
-        #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
-
         self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
         self.chkLayerVisibility = JCheckBox()
         self.pnlLayer.add(self.chkLayerVisibility)
@@ -90,7 +75,6 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblLayerIcon = JLabel()
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())+2)
         self.lblUnknown = JLabel()
 
         
@@ -98,7 +82,6 @@ class VisibilityCellRenderer(TreeCellRenderer):
         uo = value.getUserObject()
         if isinstance(uo, DataGroup):
             self.lblGroup.setText(uo.getName())
-            self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
             return self.lblGroup
         if isinstance(uo, DataLayer):
             self.lblLayerName.setText(uo.getName())
@@ -115,9 +98,7 @@ class VisibilityCellRenderer(TreeCellRenderer):
                 self.lblLayerName.setForeground(Color.BLACK)
             #self.lblLayerName.setFont(font)
             return self.pnlLayer
-        self.lblUnknown.setText("")
-        self.lblUnknown.setPreferredSize(Dimension(0,0))
-
+        self.lblUnknown.setText("None")
         return self.lblUnknown
         
         

@@ -30,7 +30,7 @@ class TabbedToC(FormPanel,Component,ViewPortListener):
     self.tabTOC.setToolTipTextAt(0,"Lista por orden de dibujo")
     self.tabTOC.setToolTipTextAt(1,"Lista por fuente")
     self.tabTOC.setToolTipTextAt(2,"Lista por visibilidad")
-    self.tabTOC.setToolTipTextAt(3,unicode("Lista por selección","utf-8"))
+    self.tabTOC.setToolTipTextAt(3,unicode("Lista por selecciï¿½n","utf-8"))
     self.__mapContext = None
     self.setPreferredSize(300,200)
 
@@ -51,7 +51,7 @@ class TabbedToC(FormPanel,Component,ViewPortListener):
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
     # TAB Selection
     #setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
-    setTreeAsSelectionOrder(self.jp1, self.__mapContext)
+    setTreeAsSelectionOrder(self.pnlTest, self.__mapContext)
     
     # Agregamos listener al ViewPort
     self.__mapContext.getViewPort().addViewPortListener(self)

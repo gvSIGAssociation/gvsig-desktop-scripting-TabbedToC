@@ -24,8 +24,8 @@
     </at>
     <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
    </super>
-   <at name="id">C:\Users\oskmo\gvSIG\plugins\org.gvsig.scripting.app.mainplugin\2.4.0\scripts\addons\TabbedToC\tabbedtoc.xml</at>
-   <at name="path">addons\TabbedToC\tabbedtoc.xml</at>
+   <at name="id">/home/osc/gvSIG/plugins/org.gvsig.scripting.app.mainplugin/2.4.0/scripts/addons/TabbedToC/tabbedtoc.xml</at>
+   <at name="path">addons/TabbedToC/tabbedtoc.xml</at>
    <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
    <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
    <at name="components">
@@ -92,7 +92,7 @@
                    <at name="icon">
                     <object classname="com.jeta.forms.store.properties.IconProperty">
                      <at name="embedded">false</at>
-                     <at name="path">addons\TabbedToC\images\drawingorder.png</at>
+                     <at name="path">addons/TabbedToC/images/drawingorder.png</at>
                      <at name="description">drawingorder.png</at>
                      <at name="width">16</at>
                      <at name="height">16</at>
@@ -114,7 +114,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.412173986</at>
+                     <at name="id">embedded.1605085444</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -144,8 +144,8 @@
                             <at name="properties">
                              <object classname="com.jeta.forms.store.support.PropertyMap">
                               <at name="name">pnlDrawingOrder</at>
-                              <at name="width">1009</at>
-                              <at name="height">571</at>
+                              <at name="width">1351</at>
+                              <at name="height">780</at>
                              </object>
                             </at>
                            </object>
@@ -244,7 +244,7 @@
                    <at name="icon">
                     <object classname="com.jeta.forms.store.properties.IconProperty">
                      <at name="embedded">false</at>
-                     <at name="path">addons\TabbedToC\images\sourceorder.png</at>
+                     <at name="path">addons/TabbedToC/images/sourceorder.png</at>
                      <at name="description">sourceorder.png</at>
                      <at name="width">16</at>
                      <at name="height">16</at>
@@ -266,7 +266,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.469808456</at>
+                     <at name="id">embedded.603781398</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -323,7 +323,7 @@
                               <at name="scrollableTracksViewportWidth">true</at>
                               <at name="name">treeSourceOrder</at>
                               <at name="showsRootHandles">true</at>
-                              <at name="width">1007</at>
+                              <at name="width">1349</at>
                               <at name="rowCount">3</at>
                               <at name="scollBars">
                                <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
@@ -353,7 +353,7 @@
                                </object>
                               </at>
                               <at name="rootVisible">false</at>
-                              <at name="height">569</at>
+                              <at name="height">778</at>
                              </object>
                             </at>
                            </object>
@@ -452,7 +452,7 @@
                    <at name="icon">
                     <object classname="com.jeta.forms.store.properties.IconProperty">
                      <at name="embedded">false</at>
-                     <at name="path">addons\TabbedToC\images\visivilityorder.png</at>
+                     <at name="path">addons/TabbedToC/images/visivilityorder.png</at>
                      <at name="description">visivilityorder.png</at>
                      <at name="width">16</at>
                      <at name="height">16</at>
@@ -474,7 +474,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.1056346190</at>
+                     <at name="id">embedded.1607235039</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -530,7 +530,7 @@
                               <at name="scrollableTracksViewportHeight">true</at>
                               <at name="scrollableTracksViewportWidth">true</at>
                               <at name="name">treeVisibilityOrder</at>
-                              <at name="width">1007</at>
+                              <at name="width">1349</at>
                               <at name="scollBars">
                                <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
                                 <at name="name">scollBars</at>
@@ -558,7 +558,7 @@
                                 </at>
                                </object>
                               </at>
-                              <at name="height">569</at>
+                              <at name="height">778</at>
                              </object>
                             </at>
                            </object>
@@ -657,7 +657,7 @@
                    <at name="icon">
                     <object classname="com.jeta.forms.store.properties.IconProperty">
                      <at name="embedded">false</at>
-                     <at name="path">addons\TabbedToC\images\selectionorder.png</at>
+                     <at name="path">addons/TabbedToC/images/selectionorder.png</at>
                      <at name="description">selectionorder.png</at>
                      <at name="width">16</at>
                      <at name="height">16</at>
@@ -679,7 +679,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.1284032167</at>
+                     <at name="id">embedded.1943275977</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -735,7 +735,7 @@
                               <at name="scrollableTracksViewportHeight">true</at>
                               <at name="scrollableTracksViewportWidth">true</at>
                               <at name="name">treeSelectionOrder</at>
-                              <at name="width">1007</at>
+                              <at name="width">1349</at>
                               <at name="scollBars">
                                <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
                                 <at name="name">scollBars</at>
@@ -763,7 +763,7 @@
                                 </at>
                                </object>
                               </at>
-                              <at name="height">569</at>
+                              <at name="height">778</at>
                              </object>
                             </at>
                            </object>
@@ -863,7 +863,6 @@
                    <at name="icon">
                     <object classname="com.jeta.forms.store.properties.IconProperty">
                      <at name="embedded">false</at>
-                     <at name="description"></at>
                      <at name="width">0</at>
                      <at name="height">0</at>
                     </object>
@@ -884,7 +883,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.E3239d4fC162ee590669XH7ff7</at>
+                     <at name="id">embedded.1829169473</at>
                      <at name="rowspecs">CENTER:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE</at>
                      <at name="colspecs">FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE</at>
                      <at name="components">
@@ -913,9 +912,9 @@
                             <at name="classname">javax.swing.JPanel</at>
                             <at name="properties">
                              <object classname="com.jeta.forms.store.support.PropertyMap">
-                              <at name="name">jp1</at>
-                              <at name="width">977</at>
-                              <at name="height">539</at>
+                              <at name="name">pnlTest</at>
+                              <at name="width">1319</at>
+                              <at name="height">748</at>
                              </object>
                             </at>
                            </object>
@@ -940,7 +939,7 @@
                            </at>
                           </object>
                          </at>
-                         <at name="name"></at>
+                         <at name="name"/>
                          <at name="fill">
                           <object classname="com.jeta.forms.store.properties.effects.PaintProperty">
                            <at name="name">fill</at>
@@ -951,6 +950,26 @@
                            <at name="name">scollBars</at>
                            <at name="verticalpolicy">21</at>
                            <at name="horizontalpolicy">31</at>
+                           <at name="border">
+                            <object classname="com.jeta.forms.store.properties.CompoundBorderProperty">
+                             <super classname="com.jeta.forms.store.properties.BorderProperty">
+                              <at name="name">border</at>
+                             </super>
+                             <at name="borders">
+                              <object classname="java.util.LinkedList">
+                               <item >
+                                <at name="value">
+                                 <object classname="com.jeta.forms.store.properties.DefaultBorderProperty">
+                                  <super classname="com.jeta.forms.store.properties.BorderProperty">
+                                   <at name="name">border</at>
+                                  </super>
+                                 </object>
+                                </at>
+                               </item>
+                              </object>
+                             </at>
+                            </object>
+                           </at>
                           </object>
                          </at>
                         </object>
@@ -997,9 +1016,9 @@
               </at>
              </object>
             </at>
-            <at name="width">1040</at>
+            <at name="width">1382</at>
             <at name="tabCount">5</at>
-            <at name="height">647</at>
+            <at name="height">856</at>
            </object>
           </at>
          </object>
