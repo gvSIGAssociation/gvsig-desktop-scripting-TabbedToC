@@ -20,6 +20,10 @@ from org.gvsig.tools.swing.api import Component
 
 from visibilityorder import setTreeAsVisibilityOrder
 
+import selectionorder
+reload(selectionorder)
+from selectionorder import setTreeAsSelectionOrder
+
 class TabbedToC(FormPanel,Component,ViewPortListener):
   def __init__(self):
     FormPanel.__init__(self,getResource(__file__,"tabbedtoc.xml"))
@@ -46,6 +50,8 @@ class TabbedToC(FormPanel,Component,ViewPortListener):
     # TAB Visibility 
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
     # TAB Selection
+    #setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
+    setTreeAsSelectionOrder(self.jp1, self.__mapContext)
     
     # Agregamos listener al ViewPort
     self.__mapContext.getViewPort().addViewPortListener(self)

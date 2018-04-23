@@ -9,6 +9,7 @@ import gvsig
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
 import os
+from org.gvsig.app.project.documents.view.toc import TocItemBranch
 
 def setTreeAsVisibilityOrder(tree, mapContext):
   model = createTreeModel(mapContext)
@@ -21,7 +22,9 @@ def expandAllNodes(tree, startingIndex, rowCount):
 
     if tree.getRowCount()!=rowCount:
         expandAllNodes(tree, rowCount, tree.getRowCount())
-        
+def addLegend(nodeLayer, lyr):
+    width = 300
+    
 def createTreeModel(mapContext, reducedTree=True):
     root = DefaultMutableTreeNode("Visibility")
     rootWithVisibility = DefaultMutableTreeNode(DataFolder("Layers with Visibility",None))
@@ -32,34 +35,28 @@ def createTreeModel(mapContext, reducedTree=True):
     root.insert(rootWithoutVisibility, root.getChildCount())
     root.insert(rootNotVisibility, root.getChildCount())
     
-    yesVis = list()
-    outVis = list()
-    notVis = list()
+    #yesVis = list()
+    #outVis = list()
+    #notVis = list()
     for layer in iter(mapContext.deepiterator()):
         if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
-            yesVis.append(layer)
+            #yesVis.append(layer)
+            # TODO: DOINGGGGGGGGGGGGGG
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+            branch = TocItemBranch(layer)
+            newNode = DefaultMutableTreeNode(branch)
             rootWithVisibility.insert(newNode, rootWithVisibility.getChildCount())
+            addLegend(newNode, layer)
+            
         elif not layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
-            outVis.append(layer)
+            #outVis.append(layer)
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
             rootWithoutVisibility.insert(newNode, rootWithoutVisibility.getChildCount())
         elif layer.isVisible()==False:
-            notVis.append(layer)
+            #notVis.append(layer)
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
             rootNotVisibility.insert(newNode,rootNotVisibility.getChildCount())
             
-    #for v in yesVis:
-    #    folder = DefaultMutableTreeNode(DataFolder(path,path))
-    #    root.insert(folder, root.getChildCount())
-    """
-    layers.sort(cmp = lambda x,y: cmp(x[0],y[0]))
-    if reducedTree:
-      buildReducedTreeFromLayers(localLayers,layers)
-    else:
-      for path,layer in layers:
-        buildTreeFromPath(localLayers,path,layer)
-    """
     model = DefaultTreeModel(root)
     return model
 
