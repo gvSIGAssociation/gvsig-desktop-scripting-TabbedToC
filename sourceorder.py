@@ -134,6 +134,8 @@ def createTreeModel(mapContext, reducedTree=True):
   root.insert(remoteLayers, root.getChildCount())
   layers = list()
   for layer in iter(mapContext.deepiterator()):
+    if layer.getDataStore() == None:
+        continue
     params = layer.getDataStore().getParameters()
     getFile = getattr(params, "getFile", None)
     if getFile != None:
@@ -153,7 +155,6 @@ def createTreeModel(mapContext, reducedTree=True):
   return model
   
 def main(*args):
-    mapContext = gvsig.currentView().getMapContext()
-    model = createTreeModel(mapContext)
-    #print model
+    import tabbedtoc
+    tabbedtoc.main()
     

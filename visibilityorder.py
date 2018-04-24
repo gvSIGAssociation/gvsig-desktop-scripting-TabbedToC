@@ -40,6 +40,9 @@ from org.gvsig.tools import ToolsLocator
 
 from javax.swing.tree import TreePath
 
+from org.gvsig.fmap.dal.feature.impl import DefaultFeatureStore
+from org.gvsig.fmap.mapcontext.layers import LayerListener
+
 class LayerMenuItem(JMenuItem, ActionListener):
     def __init__(self, action, layer, tocItem,mapContext):
         self.action = action
@@ -62,9 +65,40 @@ def setTreeAsVisibilityOrder(tree, mapContext):
   tree.addMouseListener(VisibilityMouseAdapter(tree,mapContext))
   vportlistener = VisibilityViewPortListener(tree, mapContext)
   mapContext.getViewPort().addViewPortListener(vportlistener)
+  for layer in iter(mapContext.deepiterator()): #org.gvsig.fmap.mapcontext.layers
+    listeners = layer.getLayerListeners()
+    for listener in listeners:
+        if getattr(listener, 'getName', False):
+            if listener.getName()=='VisibilityLayerListener':
+              layer.removeLayerListener(listener)
+    store = layer.getDataStore()
+    #if isinstance(store,DefaultFeatureStore):
+    layer.addLayerListener(VisibilityLayerListener(tree,mapContext))
   expandAllNodes(tree, 0, tree.getRowCount())
   
-
+class VisibilityLayerListener(LayerListener):
+  def __init__(self, tree,mapContext):
+    self.mapContext = mapContext
+    self.tree = tree
+  def getName(self):
+    return "VisibilityLayerListener"
+  def activationChanged(self,e):
+    pass
+  def drawValueChanged(self,e):
+    model = createTreeModel(self.mapContext)
+    self.tree.setModel(model)
+    expandAllNodes(self.tree, 0, self.tree.getRowCount())
+  def editionChanged(self,e):
+    model = createTreeModel(self.mapContext)
+    self.tree.setModel(model)
+    expandAllNodes(self.tree, 0, self.tree.getRowCount())
+  def nameChanged(self,e):
+    print "name"
+  def visibilityChanged(self,e):
+    model = createTreeModel(self.mapContext)
+    self.tree.setModel(model)
+    expandAllNodes(self.tree, 0, self.tree.getRowCount())
+    
 #TODO viewport class
 class VisibilityViewPortListener(ViewPortListener):
   def __init__(self, tree,mapContext):
@@ -97,7 +131,8 @@ iconTheme = None
 def getIconFromLayer(layer):
   global mapContextManager
   global iconTheme
-
+  if layer == None or layer.getDataStore()==None:
+      return None
   providerName = layer.getDataStore().getProviderName()
   if providerName != None:
     if mapContextManager == None:
@@ -178,7 +213,7 @@ class VisibilityMouseAdapter(MouseAdapter):
                         newItem.setEnabled(False)
                         menu.add(newItem)
 
-            menu.show(self.tree,50,y)
+            menu.show(self.tree,x,y)
             return
             
 def getExpansionState(tree):

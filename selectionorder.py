@@ -77,8 +77,8 @@ def setTreeAsSelectionOrder(tree, mapContext):
               if listener.getName()=='SelectionLayerListener':
                 layer.removeLayerListener(listener)
       store = layer.getDataStore()
-      if isinstance(store,DefaultFeatureStore):
-          layer.addLayerListener(SelectionLayerListener(tree,mapContext))
+      #if isinstance(store,DefaultFeatureStore):
+      layer.addLayerListener(SelectionLayerListener(tree,mapContext))
 
   expandAllNodes(tree, 0, tree.getRowCount())
 
@@ -91,7 +91,7 @@ class SelectionLayerListener(LayerListener):
   def getName(self):
     return "SelectionLayerListener"
   def activationChanged(self,e):
-    print "activation"
+    pass
   def drawValueChanged(self,e):
     model = createTreeModel(self.mapContext)
     self.tree.setModel(model)
@@ -103,7 +103,9 @@ class SelectionLayerListener(LayerListener):
   def nameChanged(self,e):
     print "name"
   def visibilityChanged(self,e):
-    print "visibility"
+    model = createTreeModel(self.mapContext)
+    self.tree.setModel(model)
+    expandAllNodes(self.tree, 0, self.tree.getRowCount())
 
 def expandAllNodes(tree, startingIndex, rowCount):
     for i in xrange(startingIndex,rowCount): 
@@ -126,7 +128,8 @@ def getIconByName(iconName):
 def getIconFromLayer(layer):
   global mapContextManager
   global iconTheme
-
+  if layer == None or layer.getDataStore()==None:
+      return None
   providerName = layer.getDataStore().getProviderName()
   if providerName != None:
     if mapContextManager == None:
@@ -167,7 +170,6 @@ class SelectionMouseAdapter(MouseAdapter):
       elif x>62:
           envelope = feature.getDefaultGeometry().getEnvelope()
           self.mapContext.getViewPort().setEnvelope(envelope)
-      pass
     if isinstance(node.getUserObject(), DataLayer):
       layer = node.getUserObject().getLayer()
       #if SwingUtilities.isLeftMouseButton(event):
@@ -198,8 +200,8 @@ class SelectionMouseAdapter(MouseAdapter):
         tocItem = TocItemLeaf(None, layer.getName(),layer.getShapeType())
         activesLayers = self.mapContext.getLayers().getActives()
         actions = []
-        for x in ep.iterator():
-          action = x.create()
+        for epx in ep.iterator():
+          action = epx.create()
           actions.append([action,action.getGroupOrder(), action.getGroup(), action.getOrder()])
 
         sortedActions =  sorted(actions, key = lambda x: (x[1], x[2],x[3]))
@@ -220,7 +222,7 @@ class SelectionMouseAdapter(MouseAdapter):
               newItem.setEnabled(False)
               menu.add(newItem)
 
-          menu.show(self.tree,50,y)
+          menu.show(self.tree,x,y)
     
             
 def getExpansionState(tree):
@@ -282,9 +284,13 @@ class SelectionCellRenderer(TreeCellRenderer):
 
             self.lblLayerName.setText(uo.getName())
             self.lblLayerIcon.setIcon(getIconFromLayer(layer))
+            if layer.isVisible():
+                self.lblLayerName.setEnabled(True)
+            else:
+                self.lblLayerName.setEnabled(False)
             self.lblClean.setIcon(getIconByName("edit-clear"))
-            
-            if layer.getDataStore().getSelection()!= None and layer.getDataStore().getSelection().getSize() !=0: # and layer.isVisible():
+
+            if layer.getDataStore() != None and layer.getDataStore().getSelection()!= None and layer.getDataStore().getSelection().getSize() !=0: # and layer.isVisible():
                 self.lblClean.setEnabled(True)
                 self.lblFeatureSelecteds.setText(str(layer.getDataStore().getSelection().getSize()))
                 self.lblFeatureSelecteds.setEnabled(True)
