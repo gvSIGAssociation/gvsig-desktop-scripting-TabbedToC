@@ -49,11 +49,8 @@ class TabbedToC(FormPanel,Component):
     # TAB Visibility 
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
     # TAB Selection
-    #setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
-    setTreeAsSelectionOrder(self.pnlTest, self.__mapContext)
-    
-    # Agregamos listener al ViewPort
-    #self.__mapContext.getViewPort().addViewPortListener(self)
+    setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
+
 
 
             

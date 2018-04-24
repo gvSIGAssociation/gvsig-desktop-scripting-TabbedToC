@@ -114,7 +114,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.1060847483</at>
+                     <at name="id">embedded.1821225284</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -144,8 +144,8 @@
                             <at name="properties">
                              <object classname="com.jeta.forms.store.support.PropertyMap">
                               <at name="name">pnlDrawingOrder</at>
-                              <at name="width">1351</at>
-                              <at name="height">780</at>
+                              <at name="width">942</at>
+                              <at name="height">671</at>
                              </object>
                             </at>
                            </object>
@@ -266,7 +266,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.1167337323</at>
+                     <at name="id">embedded.972744301</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -323,7 +323,7 @@
                               <at name="scrollableTracksViewportWidth">true</at>
                               <at name="name">treeSourceOrder</at>
                               <at name="showsRootHandles">true</at>
-                              <at name="width">1349</at>
+                              <at name="width">940</at>
                               <at name="rowCount">3</at>
                               <at name="scollBars">
                                <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
@@ -353,7 +353,7 @@
                                </object>
                               </at>
                               <at name="rootVisible">false</at>
-                              <at name="height">778</at>
+                              <at name="height">669</at>
                              </object>
                             </at>
                            </object>
@@ -474,7 +474,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.1149288181</at>
+                     <at name="id">embedded.1438374005</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -530,7 +530,7 @@
                               <at name="scrollableTracksViewportHeight">true</at>
                               <at name="scrollableTracksViewportWidth">true</at>
                               <at name="name">treeVisibilityOrder</at>
-                              <at name="width">1349</at>
+                              <at name="width">940</at>
                               <at name="rowCount">3</at>
                               <at name="scollBars">
                                <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
@@ -560,7 +560,7 @@
                                </object>
                               </at>
                               <at name="rootVisible">false</at>
-                              <at name="height">778</at>
+                              <at name="height">669</at>
                              </object>
                             </at>
                            </object>
@@ -681,7 +681,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.844353223</at>
+                     <at name="id">embedded.1529667678</at>
                      <at name="rowspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="colspecs">FILL:DEFAULT:GROW(1.0)</at>
                      <at name="components">
@@ -737,7 +737,8 @@
                               <at name="scrollableTracksViewportHeight">true</at>
                               <at name="scrollableTracksViewportWidth">true</at>
                               <at name="name">treeSelectionOrder</at>
-                              <at name="width">1349</at>
+                              <at name="width">940</at>
+                              <at name="rowCount">3</at>
                               <at name="scollBars">
                                <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
                                 <at name="name">scollBars</at>
@@ -765,7 +766,8 @@
                                 </at>
                                </object>
                               </at>
-                              <at name="height">778</at>
+                              <at name="rootVisible">false</at>
+                              <at name="height">669</at>
                              </object>
                             </at>
                            </object>
@@ -885,7 +887,7 @@
                       </at>
                       <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
                      </super>
-                     <at name="id">embedded.692852212</at>
+                     <at name="id">embedded.1390889177</at>
                      <at name="rowspecs">CENTER:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE</at>
                      <at name="colspecs">FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE</at>
                      <at name="components">
@@ -915,8 +917,8 @@
                             <at name="properties">
                              <object classname="com.jeta.forms.store.support.PropertyMap">
                               <at name="name">pnlTest</at>
-                              <at name="width">1319</at>
-                              <at name="height">748</at>
+                              <at name="width">910</at>
+                              <at name="height">639</at>
                              </object>
                             </at>
                            </object>
@@ -1018,9 +1020,9 @@
               </at>
              </object>
             </at>
-            <at name="width">1382</at>
+            <at name="width">973</at>
             <at name="tabCount">5</at>
-            <at name="height">856</at>
+            <at name="height">747</at>
            </object>
           </at>
          </object>

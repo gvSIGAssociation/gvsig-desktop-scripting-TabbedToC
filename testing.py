@@ -4,11 +4,12 @@ import gvsig
 
 from java.util import HashMap
 from javax.swing.tree import TreePath
-from org.apache.commons.lang import Utils
 from java.awt import Dimension
 from javax.swing import JComponent
 from java.awt import BorderLayout
+from org.gvsig.tools.swing.api import ToolsSwingLocator
 
+"""
 class ItemsExpandeds:
     itemsExpanded = HashMap()
     expandingNodes = False
@@ -286,7 +287,7 @@ class TOC(JComponent):
 
     #/**
     # * Clase Listener que reacciona al pulsar sobre el checkbox de un nodo y
-    # * crea un popupmenu al pulsar el botón derecho.
+    # * crea un popupmenu al pulsar el botï¿½n derecho.
     # */
     class NodeSelectionListener(MouseAdapter, ActionListener):
 
@@ -374,15 +375,15 @@ class TOC(JComponent):
                     lyr = elTema.getLayer()
                     iflyr.isAvailable():
                         lyr.getMapContext().beginAtomicEvent()
-                    #// Si está pulsado SHIFT
+                    #// Si estï¿½ pulsado SHIFT
                     if (e.getModifiers() and InputEvent.SHIFT_MASK) != 0 and (e.getButton() == MouseEvent.BUTTON1 or e.getButton() == MouseEvent.BUTTON3)):
                         if countDeepActiveLayers > 0:
                             self.selectInterval(plainListLayers, lyr)
                         else:
                             lyr.setActive(!lyr.isActive())
 
-                    else: # { // Si no está pulsado SHIFT
-                        #// Si no está pulsado CTRL
+                    else: # { // Si no estï¿½ pulsado SHIFT
+                        #// Si no estï¿½ pulsado CTRL
                         if not (e.getModifiers() and InputEvent.CTRL_MASK) != 0:
                             if e.getButton() == MouseEvent.BUTTON1:
                                 if countDeepActiveLayers > 1:
@@ -396,29 +397,29 @@ class TOC(JComponent):
                             if e.getButton() == MouseEvent.BUTTON3:
                                 if lyr.isActive():
                                     pass
-                                    #// No modificamos la selección porque lo que
-                                    #// se va a hacer más abajo es abrir el menú
+                                    #// No modificamos la selecciï¿½n porque lo que
+                                    #// se va a hacer mï¿½s abajo es abrir el menï¿½
                                     #// contextual
                                 else:
                                      active = lyr.isActive()
                                     layers.setAllActives(False)
                                     lyr.setActive(!active)
-                        else: # // Si sí está pulsado CTRL
+                        else: # // Si sï¿½ estï¿½ pulsado CTRL
                             if e.getButton() == MouseEvent.BUTTON1:
-                                #// BUTTON1 cambiamos la activación de la lyr
+                                #// BUTTON1 cambiamos la activaciï¿½n de la lyr
                                 #// seleccionada
                                 lyr.setActive(!lyr.isActive())
                             if e.getButton() == MouseEvent.BUTTON3:
                                 if lyr.isActive():
-                                    #// No modificamos la selección porque lo que
-                                    #// se va a hacer más abajo es abrir el menú
+                                    #// No modificamos la selecciï¿½n porque lo que
+                                    #// se va a hacer mï¿½s abajo es abrir el menï¿½
                                     #// contextual
                                 else:
                                     lyr.setActive(True)
 
                     layerNodeLocation = tree.getUI().getPathBounds(tree, path).getLocation()
 
-                    #// Rectángulo que representa el checkbox
+                    #// Rectï¿½ngulo que representa el checkbox
                     checkBoxBounds = m_TocRenderer.getCheckBoxBounds()
                     checkBoxBounds.translate(layerNodeLocation.getX(), layerNodeLocation.getY())
 
@@ -556,7 +557,7 @@ class TOC(JComponent):
                                 else:
                                     if not instanceof(layerAux, FLayers):
                                         layerAux.setActive(False)
-                        else: #{ // Si myLayer está entre firstActive y lastActive
+                        else: #{ // Si myLayer estï¿½ entre firstActive y lastActive
                                  #// seleccionamos desde myLayer hasta lastLayer
                             for j in range(0, myLayer): #(int j = 0; j < myLayer; j++) {
                                 layerAux = layers.get(j)
@@ -605,7 +606,7 @@ class TOC(JComponent):
          # * Actualiza la visibilidad de la capas.
          # *
          # * @param lyr
-         # *            Capa sobre la que se está clickando.
+         # *            Capa sobre la que se estï¿½ clickando.
          # */
          def updateVisible(self,lyr):
             if lyr.isAvailable():
@@ -621,7 +622,7 @@ class TOC(JComponent):
                         m_TreeModel.reload(node)
          #/**
          #* Actualiza de forma recursiva la visibilidad de los hijos de la capa
-         #* que se pasa como parámetro.
+         #* que se pasa como parï¿½metro.
          #*
          #* @param lyr
          #*            Capa a actualizar.
@@ -635,7 +636,7 @@ class TOC(JComponent):
 
          #/**
          #* Actualiza de forma recursiva la visibilidad del padre de la capa que
-         #* se pasa como parámetro.
+         #* se pasa como parï¿½metro.
          #*
          #* @param lyr
          #*            Capa a actualizar.
@@ -666,18 +667,11 @@ class TOC(JComponent):
       def haveToShowLeyendOfLayer(self,layer):
         ProjectPreferences projectPreferences = ApplicationLocator.getProjectManager().getProjectPreferences()
         return !(!layer.isVisible() and  projectPreferences.getHideLegendInToCOfNonVisibleLayers())
+"""
 
-    }
-
-}
-
-
-
-
-
-
-
+mapContextManager = None
+iconTheme = None
 
 def main(*args):
 
-    print TOC()
+    gvsig.currentLayer().getDataStore().getFeatureSelection()

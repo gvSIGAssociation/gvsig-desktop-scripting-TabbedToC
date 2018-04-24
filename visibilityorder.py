@@ -90,8 +90,6 @@ def expandAllNodes(tree, startingIndex, rowCount):
     if tree.getRowCount()!=rowCount:
         expandAllNodes(tree, rowCount, tree.getRowCount())
         
-def addLegend(nodeLayer, lyr):
-    width = 300
 
 mapContextManager = None
 iconTheme = None
@@ -233,13 +231,17 @@ class VisibilityCellRenderer(TreeCellRenderer):
                 self.chkLayerVisibility.setEnabled(True)
             else:
                 self.chkLayerVisibility.setEnabled(False)
+
+                            
+            self.lblLayerName.setForeground(Color.BLACK)
+
+            font = self.lblLayerName.getFont()
+            if layer.isEditing():
+                self.lblLayerName.setForeground(Color.RED)
             if layer.isActive():
-                font = self.lblLayerName.getFont()
                 self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
             else:
-                font = self.lblLayerName.getFont()
                 self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
-                self.lblLayerName.setForeground(Color.BLACK)
             return self.pnlLayer
         self.lblUnknown.setText("")
         self.lblUnknown.setPreferredSize(Dimension(0,0))
@@ -250,9 +252,9 @@ class VisibilityCellRenderer(TreeCellRenderer):
 def createTreeModel(mapContext, reducedTree=True):
     root = DefaultMutableTreeNode("Visibility")
     
-    rootWithVisibility = DefaultMutableTreeNode(DataGroup("Layers with Visibility"))
-    rootWithoutVisibility = DefaultMutableTreeNode(DataGroup("Layers without Visibility"))
-    rootNotVisibility = DefaultMutableTreeNode(DataGroup("Layers desactivated"))
+    rootWithVisibility = DefaultMutableTreeNode(DataGroup("Visible"))
+    rootWithoutVisibility = DefaultMutableTreeNode(DataGroup("Out of Scale Range"))
+    rootNotVisibility = DefaultMutableTreeNode(DataGroup("Not visible"))
     
     root.insert(rootWithVisibility, root.getChildCount())
     root.insert(rootWithoutVisibility, root.getChildCount())
