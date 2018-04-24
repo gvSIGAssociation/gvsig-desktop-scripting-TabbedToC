@@ -178,7 +178,7 @@ class VisibilityMouseAdapter(MouseAdapter):
                         newItem.setEnabled(False)
                         menu.add(newItem)
 
-            menu.show(self.tree,50,y)
+            menu.show(self.tree,x,y)
             return
             
 def getExpansionState(tree):

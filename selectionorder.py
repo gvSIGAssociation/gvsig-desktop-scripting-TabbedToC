@@ -167,7 +167,6 @@ class SelectionMouseAdapter(MouseAdapter):
       elif x>62:
           envelope = feature.getDefaultGeometry().getEnvelope()
           self.mapContext.getViewPort().setEnvelope(envelope)
-      pass
     if isinstance(node.getUserObject(), DataLayer):
       layer = node.getUserObject().getLayer()
       #if SwingUtilities.isLeftMouseButton(event):
@@ -198,8 +197,8 @@ class SelectionMouseAdapter(MouseAdapter):
         tocItem = TocItemLeaf(None, layer.getName(),layer.getShapeType())
         activesLayers = self.mapContext.getLayers().getActives()
         actions = []
-        for x in ep.iterator():
-          action = x.create()
+        for epx in ep.iterator():
+          action = epx.create()
           actions.append([action,action.getGroupOrder(), action.getGroup(), action.getOrder()])
 
         sortedActions =  sorted(actions, key = lambda x: (x[1], x[2],x[3]))
@@ -220,7 +219,7 @@ class SelectionMouseAdapter(MouseAdapter):
               newItem.setEnabled(False)
               menu.add(newItem)
 
-          menu.show(self.tree,50,y)
+          menu.show(self.tree,x,y)
     
             
 def getExpansionState(tree):
