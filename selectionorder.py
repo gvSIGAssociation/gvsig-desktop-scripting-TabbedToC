@@ -65,8 +65,11 @@ def setTreeAsSelectionOrder(tree, mapContext):
   tree.setModel(model)
   tree.setCellRenderer(SelectionCellRenderer(tree, mapContext))
   tree.addMouseListener(SelectionMouseAdapter(tree,mapContext))
+
+  # add listener layer when layer is added
   #vportlistener = VisibilityViewPortListener(tree, mapContext)
   #mapContext.getViewPort().addViewPortListener(vportlistener)
+  
   for layer in iter(mapContext.deepiterator()): #org.gvsig.fmap.mapcontext.layers
       listeners = layer.getLayerListeners()
       for listener in listeners:
@@ -78,7 +81,6 @@ def setTreeAsSelectionOrder(tree, mapContext):
           layer.addLayerListener(SelectionLayerListener(tree,mapContext))
 
   expandAllNodes(tree, 0, tree.getRowCount())
-
 
 #TODO viewport class
 
@@ -102,7 +104,6 @@ class SelectionLayerListener(LayerListener):
     print "name"
   def visibilityChanged(self,e):
     print "visibility"
-
 
 def expandAllNodes(tree, startingIndex, rowCount):
     for i in xrange(startingIndex,rowCount): 
@@ -151,17 +152,21 @@ class SelectionMouseAdapter(MouseAdapter):
     if path == None: # or path.getPathCount() != 3:
         return
     node = path.getLastPathComponent()
-    print "node feature mouseadapter:", x,y,row,path
-    # exit for DataGroup objects
-    if node == None or isinstance(node.getUserObject(), DataGroup):
+    #print "node feature mouseadapter:", x,y,row,path
+
+    if node == None:
+      return
+    if isinstance(node.getUserObject(), DataGroup):
       return
     if isinstance(node.getUserObject(), FeatureDataLayerNode):
       uo = node.getUserObject()
+      feature = uo.getFeature()
       if x>42 and x<62:
-          print "clean feature"
-          feature = uo.getFeature()
           layer = node.getUserObject().getLayer()
           layer.getDataStore().getFeatureSelection().deselect(feature)
+      elif x>62:
+          envelope = feature.getDefaultGeometry().getEnvelope()
+          self.mapContext.getViewPort().setEnvelope(envelope)
       pass
     if isinstance(node.getUserObject(), DataLayer):
       layer = node.getUserObject().getLayer()
@@ -241,16 +246,19 @@ class SelectionCellRenderer(TreeCellRenderer):
         #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
         self.pnlLayer = JPanel()
         self.pnlLayer.setOpaque(False)
-        #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
+
         self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
-        #self.chkLayerVisibility = JCheckBox()
+
         self.lblClean = JLabel()
         self.pnlLayer.add(self.lblClean)
         self.lblLayerName = JLabel()
         self.lblLayerIcon = JLabel()
+        self.lblFeatureSelecteds = JLabel()
+        
+        self.pnlLayer.add(self.lblFeatureSelecteds)
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())+20)
+        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())+12)
         self.lblUnknown = JLabel()
 
         ## Feature
@@ -271,14 +279,19 @@ class SelectionCellRenderer(TreeCellRenderer):
             return self.lblGroup
         if isinstance(uo, DataLayer):
             layer = uo.getLayer()
+
             self.lblLayerName.setText(uo.getName())
             self.lblLayerIcon.setIcon(getIconFromLayer(layer))
             self.lblClean.setIcon(getIconByName("edit-clear"))
-
+            
             if layer.getDataStore().getSelection()!= None and layer.getDataStore().getSelection().getSize() !=0: # and layer.isVisible():
                 self.lblClean.setEnabled(True)
+                self.lblFeatureSelecteds.setText(str(layer.getDataStore().getSelection().getSize()))
+                self.lblFeatureSelecteds.setEnabled(True)
             else:
                 self.lblClean.setEnabled(False)
+                self.lblFeatureSelecteds.setText("0")
+                self.lblFeatureSelecteds.setEnabled(False)
                 
             font = self.lblLayerName.getFont()
             self.lblLayerName.setForeground(Color.BLACK)

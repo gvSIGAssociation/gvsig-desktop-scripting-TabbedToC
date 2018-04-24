@@ -213,7 +213,8 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblLayerIcon = JLabel()
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())+2)
+        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())) #+2
+        
         self.lblUnknown = JLabel()
         
     def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
