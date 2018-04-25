@@ -8,7 +8,6 @@ from java.awt import BorderLayout
 
 import sourceorder
 reload(sourceorder)
-
 from sourceorder import setTreeAsSourceOrder
 
 #
@@ -16,7 +15,8 @@ from sourceorder import setTreeAsSourceOrder
 #
 
 from org.gvsig.tools.swing.api import Component
-
+import visibilityorder
+reload(visibilityorder)
 from visibilityorder import setTreeAsVisibilityOrder
 
 import selectionorder

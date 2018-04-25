@@ -89,9 +89,11 @@ class SelectionLayerListener(LayerListener):
     self.mapContext = mapContext
     self.tree = tree
   def getName(self):
-    return "SelectionLayerListener"
+    return "VisibilityLayerListener"
   def activationChanged(self,e):
-    pass
+    model = createTreeModel(self.mapContext)
+    self.tree.setModel(model)
+    expandAllNodes(self.tree, 0, self.tree.getRowCount())
   def drawValueChanged(self,e):
     model = createTreeModel(self.mapContext)
     self.tree.setModel(model)
@@ -176,7 +178,7 @@ class SelectionMouseAdapter(MouseAdapter):
       #print "left mouseadapter:", x,y,row,path
       if x < 20:
         return
-      es = getExpansionState(self.tree) # save expansion tree state
+      #es = getExpansionState(self.tree) # save expansion tree state
       if x < 40:
         layer.getSelection().deselectAll()
         # TODO set state model
@@ -191,7 +193,8 @@ class SelectionMouseAdapter(MouseAdapter):
       self.mapContext.getLayers().setAllActives(False)
       layer.setActive(not layer.isActive())
       self.tree.getModel().reload()
-      setExpansionState(self.tree,es)
+
+      expandAllNodes(self.tree, 0, self.tree.getRowCount())
       #setExpansionState(self.tree,es)
       if SwingUtilities.isRightMouseButton(event):
         # EVENT Right click"

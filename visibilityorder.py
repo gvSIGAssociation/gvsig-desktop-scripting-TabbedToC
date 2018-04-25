@@ -83,7 +83,9 @@ class VisibilityLayerListener(LayerListener):
   def getName(self):
     return "VisibilityLayerListener"
   def activationChanged(self,e):
-    pass
+    model = createTreeModel(self.mapContext)
+    self.tree.setModel(model)
+    expandAllNodes(self.tree, 0, self.tree.getRowCount())
   def drawValueChanged(self,e):
     model = createTreeModel(self.mapContext)
     self.tree.setModel(model)
@@ -165,7 +167,7 @@ class VisibilityMouseAdapter(MouseAdapter):
         #print "left mouseadapter:", x,y,row,path
         if x < 20:
             return
-        es = getExpansionState(self.tree) # save expansion tree state
+        #es = getExpansionState(self.tree) # save expansion tree state
         if x < 40:
             v = layer.isVisible()
             layer.setVisible(not v)
@@ -181,7 +183,8 @@ class VisibilityMouseAdapter(MouseAdapter):
         self.mapContext.getLayers().setAllActives(False)
         layer.setActive(not layer.isActive())
         self.tree.getModel().reload()
-        setExpansionState(self.tree,es)
+        #setExpansionState(self.tree,es)
+        expandAllNodes(self.tree, 0, self.tree.getRowCount())
         #setExpansionState(self.tree,es)
         if SwingUtilities.isRightMouseButton(event):
             # EVENT Right click"
@@ -191,8 +194,8 @@ class VisibilityMouseAdapter(MouseAdapter):
             activesLayers = self.mapContext.getLayers().getActives()
 
             actions = []
-            for x in ep.iterator():
-                action = x.create()
+            for epx in ep.iterator():
+                action = epx.create()
                 actions.append([action,action.getGroupOrder(), action.getGroup(), action.getOrder()])
 
             sortedActions =  sorted(actions, key = lambda x: (x[1], x[2],x[3]))
@@ -244,8 +247,8 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
         self.chkLayerVisibility = JCheckBox()
         self.pnlLayer.add(self.chkLayerVisibility)
-        self.lblLayerName = JLabel()
         self.lblLayerIcon = JLabel()
+        self.lblLayerName = JLabel()
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
         self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())) #+2
@@ -260,7 +263,7 @@ class VisibilityCellRenderer(TreeCellRenderer):
             return self.lblGroup
         if isinstance(uo, DataLayer):
             layer = uo.getLayer()
-            self.lblLayerName.setText(uo.getName())
+            self.lblLayerName.setText(layer.getName())
             self.lblLayerIcon.setIcon(getIconFromLayer(layer))
             self.chkLayerVisibility.setSelected(layer.isVisible())
             if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
@@ -270,14 +273,18 @@ class VisibilityCellRenderer(TreeCellRenderer):
 
                             
             self.lblLayerName.setForeground(Color.BLACK)
-
+            
             font = self.lblLayerName.getFont()
+            self.lblLayerName.setForeground(Color.BLACK)
             if layer.isEditing():
                 self.lblLayerName.setForeground(Color.RED)
-            if layer.isActive():
+            if layer.isActive() and font.isBold():
+                pass
+            elif layer.isActive() and not font.isBold():
                 self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
             else:
                 self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
+            self.pnlLayer.repaint()
             return self.pnlLayer
         self.lblUnknown.setText("")
         self.lblUnknown.setPreferredSize(Dimension(0,0))
