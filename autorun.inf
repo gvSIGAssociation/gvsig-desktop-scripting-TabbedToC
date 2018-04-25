@@ -1,5 +1,5 @@
 [script]
-enable = false
+enable = true
 
 [Unit]
 type = Script
@@ -11,4 +11,10 @@ version =
 [Script]
 main = main
 Lang = python
+
+[properties]
+autorun.group.name = gvsig-base
+autorun.group.order = 1000
+autorun.order = 2900
+
 
