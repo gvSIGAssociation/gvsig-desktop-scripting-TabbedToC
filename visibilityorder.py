@@ -158,12 +158,14 @@ class VisibilityCellRenderer(TreeCellRenderer):
 
         self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
         self.chkLayerVisibility = JCheckBox()
+        self.chkLayerVisibility.setOpaque(False)
         self.pnlLayer.add(self.chkLayerVisibility)
         self.lblLayerIcon = JLabel()
         self.lblLayerName = JLabel()
+        self.lblLayerName.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())) #+2
+        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-2) #+2
         
         self.lblUnknown = JLabel()
         

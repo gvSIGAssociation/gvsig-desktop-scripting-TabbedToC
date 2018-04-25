@@ -12,25 +12,189 @@ reload(tocutils)
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
 
+from testingvisibility import expandAllNodes
+
+from java.awt import Color
+from java.awt import Dimension
+from java.awt import FlowLayout
+from java.awt import Font
+from javax.swing import BorderFactory
+from javax.swing import JCheckBox
+from javax.swing import JLabel
+from javax.swing import JPanel
+from javax.swing.tree import TreeCellRenderer
+from testingvisibility import getIconFromLayer
+from tocutils import addUpdateToCListener
+
+from java.awt.event import MouseAdapter
+from javax.swing import SwingUtilities
+from tocutils import createToCContextMenu
+
+from tocutils import getIconByName
+
 def setTreeAsSourceOrder(tree, mapContext):
-  model = createTreeModel(mapContext)
-  tree.setModel(model)
-  expandAllNodes(tree, 0, tree.getRowCount())
+  updateAll(tree, mapContext)
+ 
+  tree.setCellRenderer(SourceCellRenderer(tree, mapContext))
+  tree.addMouseListener(SourceMouseAdapter(tree,mapContext))
+  addUpdateToCListener("SourceOrder", mapContext, UpdateListener(tree,mapContext))
+  
+class UpdateListener():
+  def __init__(self, tree, mapContext):
+    self.mapContext = mapContext
+    self.tree = tree
 
+  def __call__(self):
+    updateAll(self.tree, self.mapContext)
+    
+def updateAll(tree, mapContext):
+    #print ">>> updateAll Order"
+    model = createTreeModel(mapContext)
+    tree.setModel(model)
+    tree.getModel().reload()
+    tree.repaint()
+    expandAllNodes(tree, 0, tree.getRowCount())
 
-def expandAllNodes(tree, startingIndex, rowCount):
-    for i in xrange(startingIndex,rowCount): 
-        tree.expandRow(i)
+class SourceMouseAdapter(MouseAdapter):
+    def __init__(self,tree,mapContext):
+        MouseAdapter.__init__(self)
+        self.tree = tree
+        self.mapContext = mapContext
 
-    if tree.getRowCount()!=rowCount:
-        expandAllNodes(tree, rowCount, tree.getRowCount())
+    def mouseClicked(self, event):
+
+        x = event.getX()
+        y = event.getY()
+        row = self.tree.getRowForLocation(x,y)
+        path = self.tree.getPathForRow(row)
+        #print "left mouseadapter:", x,y,row,path
+
+        if path == None or path.getPathCount() != 4:
+            return
+        node = path.getLastPathComponent()
+        # exit for DataGroup objects
+        if node == None or isinstance(node.getUserObject(), DataGroup):
+            return
+        layer = node.getUserObject().getLayer()
+        #if SwingUtilities.isLeftMouseButton(event):
+        if x < 65:
+            return
+        #es = getExpansionState(self.tree) # save expansion tree state
+        if x < 80:
+            v = layer.isVisible()
+            layer.setVisible(not v)
+            # TODO set state model
+            model = createTreeModel(self.mapContext)
+            self.tree.setModel(model)
+            #self.tree.getModel().reload()
+            #setExpansionState(self.tree,es)
+            expandAllNodes(self.tree, 0, self.tree.getRowCount())
+            return
+        
+        # Menu popup
+        
+        self.mapContext.getLayers().setAllActives(False)
+        layer.setActive(not layer.isActive())
+        self.tree.getModel().reload()
+        #setExpansionState(self.tree,es)
+        expandAllNodes(self.tree, 0, self.tree.getRowCount())
+        #setExpansionState(self.tree,es)
+        if SwingUtilities.isRightMouseButton(event):
+            # EVENT Right click"
+            menu = createToCContextMenu(self.mapContext, layer)
+            menu.show(self.tree,x,y)
+            return
+            
+class SourceCellRenderer(TreeCellRenderer):
+    def __init__(self,tree,mapContext):
+        self.tree = tree
+        self.mapContext = mapContext
+        self.pnlFolder = JPanel()
+        self.pnlFolder.setOpaque(False)
+        self.pnlFolder.setLayout(FlowLayout(FlowLayout.LEFT))
+        self.lblGroup = JLabel()
+        #self.lblGroup.setBackground(Color(222,227,233)) #.BLUE.brighter())
+        #self.lblGroup.setOpaque(True)
+        self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+        self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
+        self.lblGroupIcon = JLabel()
+        self.pnlFolder.add(self.lblGroupIcon)
+        self.pnlFolder.add(self.lblGroup)
+        #self.lblGroup.setBorder(
+        #  BorderFactory.createLineBorder(Color(222,227,233).darker(),1)
+        #)
+        #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
+        
+        self.pnlLayer = JPanel()
+        self.pnlLayer.setOpaque(False)
+        #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
+
+        self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
+        self.chkLayerVisibility = JCheckBox()
+        self.chkLayerVisibility.setOpaque(False)
+        self.pnlLayer.add(self.chkLayerVisibility)
+        self.lblLayerIcon = JLabel()
+        self.lblLayerName = JLabel()
+        self.pnlLayer.add(self.lblLayerIcon)
+        self.pnlLayer.add(self.lblLayerName)
+        #self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())) #+2
+        self.tree.setRowHeight(int(self.pnlFolder.getPreferredSize().getHeight()))
+        
+        self.lblUnknown = JLabel()
+        
+    def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
+        uo = value.getUserObject()
+        if isinstance(uo, DataFolder):
+            self.lblGroup.setText(uo.getName())
+            self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
+            if uo.getIcon()!=None:
+                self.lblGroupIcon.setIcon(uo.getIcon())
+            else:
+                self.lblGroupIcon.setIcon(getIconByName("icon-folder-open"))
+            
+            return self.pnlFolder
+        if isinstance(uo, DataLayer):
+            layer = uo.getLayer()
+            self.lblLayerName.setText(layer.getName())
+            self.lblLayerIcon.setIcon(getIconFromLayer(layer))
+            self.chkLayerVisibility.setSelected(layer.isVisible())
+            if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
+                self.chkLayerVisibility.setEnabled(True)
+            else:
+                self.chkLayerVisibility.setEnabled(False)
+
+                            
+            self.lblLayerName.setForeground(Color.BLACK)
+            
+            font = self.lblLayerName.getFont()
+            self.lblLayerName.setForeground(Color.BLACK)
+            if layer.isEditing():
+                self.lblLayerName.setForeground(Color.RED)
+            if layer.isActive() and font.isBold():
+                pass
+            #elif layer.isActive() and not font.isBold():
+            #    self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
+            #else:
+            #    self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
+            self.pnlLayer.repaint()
+            return self.pnlLayer
+        self.lblUnknown.setText("")
+        self.lblUnknown.setPreferredSize(Dimension(0,0))
+
+        return self.lblUnknown
+
 
 class DataFolder(object):
   def __init__(self,name, path, icon=None):
     self.__name = name
     self.__path = path
+    #if icon==None:
+    #   self.__icon = icon
+    #else:
     self.__icon = icon
-  
+    
+  def getIcon(self):
+      return self.__icon
   def getName(self):
     return self.__name
 
@@ -49,6 +213,8 @@ class DataLayer(object):
     self.__label = os.path.basename(self.__path)
   def getName(self):
     return self.__label
+  def getLayer(self):
+    return self.__layer
   
   toString = getName
   __str__ = getName
@@ -56,6 +222,11 @@ class DataLayer(object):
 
   def isLeaf(self):
     return True
+
+class DataGroup(DataFolder):
+    def __init__(self, name):
+        DataFolder.__init__(self, name, None)
+        
     
 
 def buildTreeFromPath(root, path, layer):
@@ -94,7 +265,12 @@ def buildReducedTreeFromLayers(root, layers):
     leafs.append((path,layer))
   paths = folders.keys()
   paths.sort()
+
   for path in paths:
+    #if True:
+    #properIcon = getIconByName("librarybrowser-folder")
+    #    folder = DefaultMutableTreeNode(DataFolder(path,path,properIcon))
+    #else:
     folder = DefaultMutableTreeNode(DataFolder(path,path))
     root.insert(folder, root.getChildCount())
     for pathLayer,layer in folders[path]:
