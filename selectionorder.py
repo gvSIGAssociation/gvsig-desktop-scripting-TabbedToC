@@ -44,110 +44,42 @@ from org.gvsig.fmap.dal.feature.impl import DefaultFeatureStore
 
 from org.gvsig.fmap.mapcontext.layers import LayerListener
 
-class LayerMenuItem(JMenuItem, ActionListener):
-    def __init__(self, action, layer, tocItem,mapContext):
-        self.action = action
-        self.layer = layer
-        self.tocItem = tocItem
-        self.mapContext = mapContext
-        self.addActionListener(self)
-        self.setText(self.action.getText())
-        if isinstance(self.action, IContextMenuActionWithIcon):
-            self.setIcon(self.action.getIcon())
-            
-    def actionPerformed(self, event):
-        layers = self.mapContext.getLayers().getActives()
-        self.action.execute(self.tocItem,layers)
+from tocutils import createToCContextMenu
+
+from tocutils import addUpdateToCListener
+
+from testingvisibility import expandAllNodes
+from testingvisibility import getIconFromLayer
+from tocutils import getIconByName
 
 def setTreeAsSelectionOrder(tree, mapContext):
-  
-  model = createTreeModel(mapContext)
-  tree.setModel(model)
+  updateAll(tree, mapContext)
+
   tree.setCellRenderer(SelectionCellRenderer(tree, mapContext))
   tree.addMouseListener(SelectionMouseAdapter(tree,mapContext))
+  addUpdateToCListener("SelectionOrder", mapContext, UpdateListener(tree,mapContext))
 
-  # add listener layer when layer is added
-  #vportlistener = VisibilityViewPortListener(tree, mapContext)
-  #mapContext.getViewPort().addViewPortListener(vportlistener)
-  
-  for layer in iter(mapContext.deepiterator()): #org.gvsig.fmap.mapcontext.layers
-      listeners = layer.getLayerListeners()
-      for listener in listeners:
-          if getattr(listener, 'getName', False):
-              if listener.getName()=='SelectionLayerListener':
-                layer.removeLayerListener(listener)
-      store = layer.getDataStore()
-      #if isinstance(store,DefaultFeatureStore):
-      layer.addLayerListener(SelectionLayerListener(tree,mapContext))
+def updateAll(tree, mapContext):
+    #print ">>> updateAll Order"
+    model = createTreeModel(mapContext)
+    tree.setModel(model)
+    tree.getModel().reload()
+    expandAllNodes(tree, 0, tree.getRowCount())
 
-  expandAllNodes(tree, 0, tree.getRowCount())
-
-#TODO viewport class
-
-class SelectionLayerListener(LayerListener):
-  def __init__(self, tree,mapContext):
+class UpdateListener():
+  def __init__(self, tree, mapContext):
     self.mapContext = mapContext
     self.tree = tree
-  def getName(self):
-    return "VisibilityLayerListener"
-  def activationChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-  def drawValueChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-  def editionChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-  def nameChanged(self,e):
-    print "name"
-  def visibilityChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
 
-def expandAllNodes(tree, startingIndex, rowCount):
-    for i in xrange(startingIndex,rowCount): 
-        tree.expandRow(i)
-
-    if tree.getRowCount()!=rowCount:
-        expandAllNodes(tree, rowCount, tree.getRowCount())
-        
-
-mapContextManager = None
-iconTheme = None
-
-def getIconByName(iconName):
-  global iconTheme
-  if iconTheme == None:
-    iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
-  icon = iconTheme.get(iconName)
-  return icon
-  
-def getIconFromLayer(layer):
-  global mapContextManager
-  global iconTheme
-  if layer == None or layer.getDataStore()==None:
-      return None
-  providerName = layer.getDataStore().getProviderName()
-  if providerName != None:
-    if mapContextManager == None:
-      mapContextManager = MapContextLocator.getMapContextManager()
-    iconName = mapContextManager.getIconLayer(providerName)
-    if iconTheme == None:
-      iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
-    icon = iconTheme.get(iconName)
-    return icon
-  return None
-
+  def __call__(self):
+    updateAll(self.tree, self.mapContext)
+    
 class SelectionMouseAdapter(MouseAdapter):
   def __init__(self,tree,mapContext):
     MouseAdapter.__init__(self)
     self.tree = tree
     self.mapContext = mapContext
+    
   def mouseClicked(self, event):
 
     x = event.getX()
@@ -198,47 +130,9 @@ class SelectionMouseAdapter(MouseAdapter):
       #setExpansionState(self.tree,es)
       if SwingUtilities.isRightMouseButton(event):
         # EVENT Right click"
-        menu = JPopupMenu()
-        ep = ToolsLocator.getExtensionPointManager().get("View_TocActions")
-        tocItem = TocItemLeaf(None, layer.getName(),layer.getShapeType())
-        activesLayers = self.mapContext.getLayers().getActives()
-        actions = []
-        for epx in ep.iterator():
-          action = epx.create()
-          actions.append([action,action.getGroupOrder(), action.getGroup(), action.getOrder()])
-
-        sortedActions =  sorted(actions, key = lambda x: (x[1], x[2],x[3]))
-        group = None
-        for actionList in sortedActions:
-          action = actionList[0]
-          if action.isVisible(tocItem, activesLayers): #(layer,)):
-            if group == None:
-              pass
-            elif group != action.getGroup():
-              menu.addSeparator()
-            group = action.getGroup()
-            if action.isEnabled(tocItem, activesLayers):
-              newItem = LayerMenuItem(action, layer,tocItem, self.mapContext)
-              menu.add(newItem)
-            else:
-              newItem = LayerMenuItem(action,layer,tocItem, self.mapContext)
-              newItem.setEnabled(False)
-              menu.add(newItem)
-
-          menu.show(self.tree,x,y)
+        menu = createToCContextMenu(self.mapContext, layer)
+        menu.show(self.tree,x,y)
     
-            
-def getExpansionState(tree):
-    x = []
-    for i in range(0, tree.getRowCount()):
-        if tree.isExpanded(i):
-            x.append(tree.getPathForRow(i)) #[1].toString()))
-    return x
-
-def setExpansionState(tree, x):
-    for i in x:
-       tree.expandPath(i)
-
 class SelectionCellRenderer(TreeCellRenderer):
     def __init__(self,tree,mapContext):
         self.tree = tree
@@ -313,7 +207,7 @@ class SelectionCellRenderer(TreeCellRenderer):
 
             return self.pnlLayer
         if isinstance(uo, FeatureDataLayerNode):
-            self.lblFeatureName.setText(str(uo.getFeature().toString()))
+            self.lblFeatureName.setText(uo.getFeature().toString())
             self.lblFeatureIcon.setIcon(getIconByName("edit-clear"))
             
             return self.pnlFeature
@@ -342,13 +236,13 @@ def createTreeModel(mapContext, reducedTree=True):
             for f in fset:
                 newFeature = DefaultMutableTreeNode(FeatureDataLayerNode(layer.getName(),layer,f))
                 newNode.insert(newFeature, newNode.getChildCount())
-            rootSelected.insert(newNode, rootSelected.getChildCount())
+            rootSelected.insert(newNode, 0)
         elif isinstance(store,DefaultFeatureStore):
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootSelectable.insert(newNode, rootSelectable.getChildCount())
+            rootSelectable.insert(newNode,0)
         else:
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootNotSelectable.insert(newNode,rootNotSelectable.getChildCount())
+            rootNotSelectable.insert(newNode,0)
         
     model = DefaultTreeModel(root)
     return model

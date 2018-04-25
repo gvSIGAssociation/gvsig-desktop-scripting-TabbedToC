@@ -43,65 +43,39 @@ from javax.swing.tree import TreePath
 from org.gvsig.fmap.dal.feature.impl import DefaultFeatureStore
 from org.gvsig.fmap.mapcontext.layers import LayerListener
 
-class LayerMenuItem(JMenuItem, ActionListener):
-    def __init__(self, action, layer, tocItem,mapContext):
-        self.action = action
-        self.layer = layer
-        self.tocItem = tocItem
-        self.mapContext = mapContext
-        self.addActionListener(self)
-        self.setText(self.action.getText())
-        if isinstance(self.action, IContextMenuActionWithIcon):
-            self.setIcon(self.action.getIcon())
-            
-    def actionPerformed(self, event):
-        layers = self.mapContext.getLayers().getActives()
-        self.action.execute(self.tocItem,layers)
+from tocutils import createToCContextMenu
+
+from tocutils import addUpdateToCListener
+
+from testingvisibility import expandAllNodes
+from testingvisibility import getIconFromLayer
+
+from javax.swing import BorderFactory
 
 def setTreeAsVisibilityOrder(tree, mapContext):
-  model = createTreeModel(mapContext)
-  tree.setModel(model)
+  updateAll(tree,mapContext)  
   tree.setCellRenderer(VisibilityCellRenderer(tree, mapContext))
   tree.addMouseListener(VisibilityMouseAdapter(tree,mapContext))
   vportlistener = VisibilityViewPortListener(tree, mapContext)
   mapContext.getViewPort().addViewPortListener(vportlistener)
-  for layer in iter(mapContext.deepiterator()): #org.gvsig.fmap.mapcontext.layers
-    listeners = layer.getLayerListeners()
-    for listener in listeners:
-        if getattr(listener, 'getName', False):
-            if listener.getName()=='VisibilityLayerListener':
-              layer.removeLayerListener(listener)
-    store = layer.getDataStore()
-    #if isinstance(store,DefaultFeatureStore):
-    layer.addLayerListener(VisibilityLayerListener(tree,mapContext))
-  expandAllNodes(tree, 0, tree.getRowCount())
+  addUpdateToCListener("VisibilityOrder", mapContext, UpdateListener(tree,mapContext))
   
-class VisibilityLayerListener(LayerListener):
-  def __init__(self, tree,mapContext):
+
+def updateAll(tree,mapContext):
+    #print ">>> updateAll Visibility"
+    model = createTreeModel(mapContext)
+    tree.setModel(model)
+    tree.getModel().reload()
+    expandAllNodes(tree, 0, tree.getRowCount())
+
+class UpdateListener():
+  def __init__(self, tree, mapContext):
     self.mapContext = mapContext
     self.tree = tree
-  def getName(self):
-    return "VisibilityLayerListener"
-  def activationChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-  def drawValueChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-  def editionChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-  def nameChanged(self,e):
-    print "name"
-  def visibilityChanged(self,e):
-    model = createTreeModel(self.mapContext)
-    self.tree.setModel(model)
-    expandAllNodes(self.tree, 0, self.tree.getRowCount())
-    
-#TODO viewport class
+
+  def __call__(self):
+    updateAll(self.tree, self.mapContext)
+        
 class VisibilityViewPortListener(ViewPortListener):
   def __init__(self, tree,mapContext):
       self.mapContext = mapContext
@@ -112,39 +86,12 @@ class VisibilityViewPortListener(ViewPortListener):
 
   # Metodo obligatorio de ViewPortListener
   def extentChanged(self,*args):
-      model = createTreeModel(self.mapContext)
-      self.tree.setModel(model)
-      expandAllNodes(self.tree, 0, self.tree.getRowCount())
+    updateAll(self.tree,self.mapContext)
+
   # Metodo obligatorio de ViewPortListener
   def projectionChanged(self,*args):
       pass
       
-def expandAllNodes(tree, startingIndex, rowCount):
-    for i in xrange(startingIndex,rowCount): 
-        tree.expandRow(i)
-
-    if tree.getRowCount()!=rowCount:
-        expandAllNodes(tree, rowCount, tree.getRowCount())
-        
-
-mapContextManager = None
-iconTheme = None
-
-def getIconFromLayer(layer):
-  global mapContextManager
-  global iconTheme
-  if layer == None or layer.getDataStore()==None:
-      return None
-  providerName = layer.getDataStore().getProviderName()
-  if providerName != None:
-    if mapContextManager == None:
-      mapContextManager = MapContextLocator.getMapContextManager()
-    iconName = mapContextManager.getIconLayer(providerName)
-    if iconTheme == None:
-      iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
-    icon = iconTheme.get(iconName)
-    return icon
-  return None
 
 class VisibilityMouseAdapter(MouseAdapter):
     def __init__(self,tree,mapContext):
@@ -188,48 +135,10 @@ class VisibilityMouseAdapter(MouseAdapter):
         #setExpansionState(self.tree,es)
         if SwingUtilities.isRightMouseButton(event):
             # EVENT Right click"
-            menu = JPopupMenu()
-            ep = ToolsLocator.getExtensionPointManager().get("View_TocActions")
-            tocItem = TocItemLeaf(None, layer.getName(),layer.getShapeType())
-            activesLayers = self.mapContext.getLayers().getActives()
-
-            actions = []
-            for epx in ep.iterator():
-                action = epx.create()
-                actions.append([action,action.getGroupOrder(), action.getGroup(), action.getOrder()])
-
-            sortedActions =  sorted(actions, key = lambda x: (x[1], x[2],x[3]))
-            group = None
-            for actionList in sortedActions:
-                action = actionList[0]
-                if action.isVisible(tocItem, activesLayers): #(layer,)):
-                    if group == None:
-                        pass
-                    elif group != action.getGroup():
-                        menu.addSeparator()
-                    group = action.getGroup()
-                    if action.isEnabled(tocItem, activesLayers):
-                        newItem = LayerMenuItem(action, layer,tocItem, self.mapContext)
-                        menu.add(newItem)
-                    else:
-                        newItem = LayerMenuItem(action,layer,tocItem, self.mapContext)
-                        newItem.setEnabled(False)
-                        menu.add(newItem)
-
+            menu = createToCContextMenu(self.mapContext, layer)
             menu.show(self.tree,x,y)
             return
             
-def getExpansionState(tree):
-    x = []
-    for i in range(0, tree.getRowCount()):
-        if tree.isExpanded(i):
-            x.append(tree.getPathForRow(i)) #[1].toString()))
-    return x
-
-def setExpansionState(tree, x):
-    for i in x:
-       tree.expandPath(i)
-
 class VisibilityCellRenderer(TreeCellRenderer):
     def __init__(self,tree,mapContext):
         self.tree = tree
@@ -239,6 +148,9 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblGroup.setOpaque(True)
         self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
         self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
+        self.lblGroup.setBorder(
+          BorderFactory.createLineBorder(Color(222,227,233).darker(),1)
+        )
         #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
         self.pnlLayer = JPanel()
         self.pnlLayer.setOpaque(False)
@@ -306,15 +218,16 @@ def createTreeModel(mapContext, reducedTree=True):
     for layer in iter(mapContext.deepiterator()):
         if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootWithVisibility.insert(newNode, rootWithVisibility.getChildCount())
+            rootWithVisibility.insert(newNode,0)
             
         elif not layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootWithoutVisibility.insert(newNode, rootWithoutVisibility.getChildCount())
+            rootWithoutVisibility.insert(newNode,0)
+
         elif layer.isVisible()==False:
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootNotVisibility.insert(newNode,rootNotVisibility.getChildCount())
-            
+            rootNotVisibility.insert(newNode,0)
+    
     model = DefaultTreeModel(root)
     return model
 

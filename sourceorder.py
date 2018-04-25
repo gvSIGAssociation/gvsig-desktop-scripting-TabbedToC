@@ -9,8 +9,6 @@ import os
 import tocutils
 reload(tocutils)
 
-from tocutils import TOCNode, TOCSimpleNode, TOCTreeCellRenderer
-
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
 
@@ -18,37 +16,14 @@ def setTreeAsSourceOrder(tree, mapContext):
   model = createTreeModel(mapContext)
   tree.setModel(model)
   expandAllNodes(tree, 0, tree.getRowCount())
-  
-  """
-  tree.setCellRenderer(
-    TOCTreeCellRenderer(
-      load_icon(getResource(__file__,"images","Folder.png")),
-      load_icon(getResource(__file__,"images","Document.png")),
-    )
-  )
-  """
+
+
 def expandAllNodes(tree, startingIndex, rowCount):
     for i in xrange(startingIndex,rowCount): 
         tree.expandRow(i)
 
     if tree.getRowCount()!=rowCount:
         expandAllNodes(tree, rowCount, tree.getRowCount())
-      
-"""
-class SourceOrderTreeModel(TOCNode):
-  def __init__(self, tree, mapContext):
-    TOCNode.__init__(self,None, icon=load_icon(getResource(__file__,"images","sourceorder.png")))
-    self.__tree = tree
-    self.__mapContext = mapContext
-    self.load()
-    
-  def load(self):
-    pass
-
-class LocalLayer(TOCSimpleNode):
-  def __init__(self, parent, layer, pathname):
-    pass
-"""
 
 class DataFolder(object):
   def __init__(self,name, path, icon=None):

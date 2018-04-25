@@ -23,6 +23,11 @@ import selectionorder
 reload(selectionorder)
 from selectionorder import setTreeAsSelectionOrder
 
+from org.gvsig.app import ApplicationLocator
+from org.gvsig.app.project.documents import DocumentManager
+from org.gvsig.app.project.documents.view import ViewManager
+from org.gvsig.tools.observer import Observer
+
 class TabbedToC(FormPanel,Component):
   def __init__(self):
     FormPanel.__init__(self,getResource(__file__,"tabbedtoc.xml"))
@@ -36,25 +41,21 @@ class TabbedToC(FormPanel,Component):
   def getTab(self):
     return self.tabTOC
     
-  def install(self):
-    viewDoc = gvsig.currentView()
-    viewPanel = viewDoc.getWindowOfView()
+  def install(self, viewPanel):
     self.pnlDrawingOrder.setLayout(BorderLayout())
     self.pnlDrawingOrder.add(viewPanel.getTOC(),BorderLayout.CENTER)
     viewPanel.getViewInformationArea().add(self,"TOC", 0, "ToC", None, "Table of contents")
     
-    self.__mapContext = viewDoc.getMapContext()
+    self.__mapContext = viewPanel.getMapControl().getMapContext()
     # TAB Source Order
     setTreeAsSourceOrder(self.treeSourceOrder, self.__mapContext)
     # TAB Visibility 
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
     # TAB Selection
     setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
-
-
-
             
 def main(*args):
+    viewDoc = gvsig.currentView()
+    viewPanel = viewDoc.getWindowOfView()
     panel = TabbedToC()
-    panel.install()
-    #panel.showWindow("ToC")
+    panel.install(viewPanel)
