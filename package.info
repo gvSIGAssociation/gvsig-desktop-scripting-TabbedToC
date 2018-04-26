@@ -1,0 +1,21 @@
+#
+#Thu Apr 26 10:55:24 CEST 2018
+owner=gvSIG Association
+code=TabbedToC
+java-version=j1_7
+official=true
+type=Script
+version=1.0.0-0
+state=testing
+operating-system=all
+dependencies=
+sources-url=
+web-url=
+architecture=all
+model-version=1.0.1
+categories=View
+description=New Table of Contents in the View to handle layers ordered by drawing, source, visibility or selection
+owner-url=
+buildNumber=0
+gvSIG-version=2.4.0
+name=TabbedToC

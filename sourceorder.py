@@ -87,6 +87,7 @@ class SourceMouseAdapter(MouseAdapter):
             # TODO set state model
             model = createTreeModel(self.mapContext)
             self.tree.setModel(model)
+            self.tree.getModel().reload()
             #self.tree.getModel().reload()
             #setExpansionState(self.tree,es)
             expandAllNodes(self.tree, 0, self.tree.getRowCount())
