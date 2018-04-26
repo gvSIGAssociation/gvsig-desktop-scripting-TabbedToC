@@ -1,11 +1,11 @@
 #
-#Thu Apr 26 10:55:24 CEST 2018
+#Thu Apr 26 11:21:27 CEST 2018
 owner=gvSIG Association
 code=TabbedToC
 java-version=j1_7
 official=true
 type=Script
-version=1.0.0-0
+version=1.0.0-1
 state=testing
 operating-system=all
 dependencies=
@@ -16,6 +16,7 @@ model-version=1.0.1
 categories=View
 description=New Table of Contents in the View to handle layers ordered by drawing, source, visibility or selection
 owner-url=
-buildNumber=0
+buildNumber=1
+download-url=https\://github.com/gvSIGAssociation/gvsig-desktop-scripting-TabbedToC/releases/download/1.0.0-1/gvSIG-desktop-2.4.0-TabbedToC-1.0.0-1-testing-all-all-j1_7.gvspkg
 gvSIG-version=2.4.0
-name=TabbedToC
+name=Tabbed ToC
