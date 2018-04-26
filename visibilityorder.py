@@ -1,3 +1,4 @@
+
 # encoding: utf-8
 
 import gvsig
@@ -47,10 +48,12 @@ from tocutils import createToCContextMenu
 
 from tocutils import addUpdateToCListener
 
-from testingvisibility import expandAllNodes
-from testingvisibility import getIconFromLayer
-
 from javax.swing import BorderFactory
+
+from tocutils import expandAllNodes
+from tocutils import getIconFromLayer
+
+from javax.swing.border import EtchedBorder
 
 def setTreeAsVisibilityOrder(tree, mapContext):
   updateAll(tree,mapContext)  
@@ -148,9 +151,9 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblGroup.setOpaque(True)
         self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
         self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
-        self.lblGroup.setBorder(
-          BorderFactory.createLineBorder(Color(222,227,233).darker(),1)
-        )
+        #border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)
+        #border = BorderFactory.createLineBorder(Color(222,227,233).darker(),1)
+        #self.lblGroup.setBorder(border)
         #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
         self.pnlLayer = JPanel()
         self.pnlLayer.setOpaque(False)
@@ -163,9 +166,10 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblLayerIcon = JLabel()
         self.lblLayerName = JLabel()
         self.lblLayerName.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+        
+        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-9) #+2
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-2) #+2
         
         self.lblUnknown = JLabel()
         
@@ -207,11 +211,12 @@ class VisibilityCellRenderer(TreeCellRenderer):
         
         
 def createTreeModel(mapContext, reducedTree=True):
-    root = DefaultMutableTreeNode("Visibility")
+    i18n = ToolsLocator.getI18nManager()
+    root = DefaultMutableTreeNode(i18n.getTranslation("_Visibility"))
     
-    rootWithVisibility = DefaultMutableTreeNode(DataGroup("Visible"))
-    rootWithoutVisibility = DefaultMutableTreeNode(DataGroup("Out of Scale Range"))
-    rootNotVisibility = DefaultMutableTreeNode(DataGroup("Not visible"))
+    rootWithVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Visible")))
+    rootWithoutVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Out_of_Scale_Range")))
+    rootNotVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Not_Visible")))
     
     root.insert(rootWithVisibility, root.getChildCount())
     root.insert(rootWithoutVisibility, root.getChildCount())

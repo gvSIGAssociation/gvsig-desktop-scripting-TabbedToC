@@ -12,7 +12,7 @@ reload(tocutils)
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
 
-from testingvisibility import expandAllNodes
+from tocutils import expandAllNodes
 
 from java.awt import Color
 from java.awt import Dimension
@@ -23,7 +23,7 @@ from javax.swing import JCheckBox
 from javax.swing import JLabel
 from javax.swing import JPanel
 from javax.swing.tree import TreeCellRenderer
-from testingvisibility import getIconFromLayer
+from tocutils import getIconFromLayer
 from tocutils import addUpdateToCListener
 
 from java.awt.event import MouseAdapter
@@ -31,6 +31,7 @@ from javax.swing import SwingUtilities
 from tocutils import createToCContextMenu
 
 from tocutils import getIconByName
+from org.gvsig.tools import ToolsLocator
 
 def setTreeAsSourceOrder(tree, mapContext):
   updateAll(tree, mapContext)
@@ -67,7 +68,7 @@ class SourceMouseAdapter(MouseAdapter):
         y = event.getY()
         row = self.tree.getRowForLocation(x,y)
         path = self.tree.getPathForRow(row)
-        #print "left mouseadapter:", x,y,row,path
+        print "left mouseadapter:", x,y,row,path
 
         if path == None or path.getPathCount() != 4:
             return
@@ -77,10 +78,10 @@ class SourceMouseAdapter(MouseAdapter):
             return
         layer = node.getUserObject().getLayer()
         #if SwingUtilities.isLeftMouseButton(event):
-        if x < 65:
+        if x < 46:
             return
         #es = getExpansionState(self.tree) # save expansion tree state
-        if x < 80:
+        if x < 62:
             v = layer.isVisible()
             layer.setVisible(not v)
             # TODO set state model
@@ -109,6 +110,14 @@ class SourceCellRenderer(TreeCellRenderer):
     def __init__(self,tree,mapContext):
         self.tree = tree
         self.mapContext = mapContext
+        ## Group
+        self.lblFolder = JLabel()
+        self.lblFolder.setBackground(Color(222,227,233)) #.BLUE.brighter())
+        self.lblFolder.setOpaque(True)
+        self.lblFolder.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+        
+        ### Folder
+        
         self.pnlFolder = JPanel()
         self.pnlFolder.setOpaque(False)
         self.pnlFolder.setLayout(FlowLayout(FlowLayout.LEFT))
@@ -125,6 +134,7 @@ class SourceCellRenderer(TreeCellRenderer):
         #)
         #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
         
+        ### LAYER
         self.pnlLayer = JPanel()
         self.pnlLayer.setOpaque(False)
         #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
@@ -145,6 +155,15 @@ class SourceCellRenderer(TreeCellRenderer):
     def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
         uo = value.getUserObject()
         if isinstance(uo, DataFolder):
+            self.lblFolder.setText(uo.getName())
+            self.lblFolder.setPreferredSize(self.lblGroupPreferredSize)
+            if uo.getIcon()!=None:
+                self.lblGroupIcon.setIcon(uo.getIcon())
+            else:
+                self.lblGroupIcon.setIcon(getIconByName("icon-folder-open"))
+            
+            return self.lblFolder
+        if isinstance(uo, DataGroup):
             self.lblGroup.setText(uo.getName())
             self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
             if uo.getIcon()!=None:
@@ -172,10 +191,10 @@ class SourceCellRenderer(TreeCellRenderer):
                 self.lblLayerName.setForeground(Color.RED)
             if layer.isActive() and font.isBold():
                 pass
-            #elif layer.isActive() and not font.isBold():
-            #    self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
-            #else:
-            #    self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
+            elif layer.isActive() and not font.isBold():
+                self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
+            else:
+                self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
             self.pnlLayer.repaint()
             return self.pnlLayer
         self.lblUnknown.setText("")
@@ -223,10 +242,27 @@ class DataLayer(object):
   def isLeaf(self):
     return True
 
-class DataGroup(DataFolder):
-    def __init__(self, name):
-        DataFolder.__init__(self, name, None)
-        
+class DataGroup(object):
+  def __init__(self,name, path, icon=None):
+    self.__name = name
+    self.__path = path
+    #if icon==None:
+    #   self.__icon = icon
+    #else:
+    self.__icon = icon
+    
+  def getIcon(self):
+      return self.__icon
+  def getName(self):
+    return self.__name
+
+  def __str__(self):
+    return self.__name
+  toString = __str__
+  __repr__ = __str__
+
+  def isLeaf(self):
+    return False
     
 
 def buildTreeFromPath(root, path, layer):
@@ -271,16 +307,17 @@ def buildReducedTreeFromLayers(root, layers):
     #properIcon = getIconByName("librarybrowser-folder")
     #    folder = DefaultMutableTreeNode(DataFolder(path,path,properIcon))
     #else:
-    folder = DefaultMutableTreeNode(DataFolder(path,path))
+    folder = DefaultMutableTreeNode(DataGroup(path,path))
     root.insert(folder, root.getChildCount())
     for pathLayer,layer in folders[path]:
       leaf = DefaultMutableTreeNode(DataLayer(pathLayer,layer))
       folder.insert(leaf, folder.getChildCount())
       
 def createTreeModel(mapContext, reducedTree=True):
-  root = DefaultMutableTreeNode("root")
-  localLayers = DefaultMutableTreeNode(DataFolder("Local layers",None))
-  remoteLayers = DefaultMutableTreeNode(DataFolder("Remote layers",None))
+  i18n = ToolsLocator.getI18nManager()
+  root = DefaultMutableTreeNode(i18n.getTranslation("_Root"))
+  localLayers = DefaultMutableTreeNode(DataFolder(i18n.getTranslation("_Local_layers"),None))
+  remoteLayers = DefaultMutableTreeNode(DataFolder(i18n.getTranslation("_Remote_layers"),None))
   root.insert(localLayers, root.getChildCount())
   root.insert(remoteLayers, root.getChildCount())
   layers = list()

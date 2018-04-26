@@ -48,9 +48,13 @@ from tocutils import createToCContextMenu
 
 from tocutils import addUpdateToCListener
 
-from testingvisibility import expandAllNodes
-from testingvisibility import getIconFromLayer
+from tocutils import expandAllNodes
+from tocutils import getIconFromLayer
 from tocutils import getIconByName
+
+from org.gvsig.tools import ToolsLocator
+
+
 
 def setTreeAsSelectionOrder(tree, mapContext):
   updateAll(tree, mapContext)
@@ -163,7 +167,8 @@ class SelectionCellRenderer(TreeCellRenderer):
         ## Feature
         self.lblFeatureIcon = JLabel()
         self.lblFeatureName = JLabel()
-        self.lblFeatureName.setText("Feature")
+        i18n = ToolsLocator.getI18nManager()
+        self.lblFeatureName.setText(i18n.getTranslation("_Feature"))
         self.pnlFeature = JPanel()
         self.pnlFeature.setOpaque(False)
         self.pnlFeature.setLayout(FlowLayout(FlowLayout.LEFT))
@@ -217,11 +222,13 @@ class SelectionCellRenderer(TreeCellRenderer):
         
         
 def createTreeModel(mapContext, reducedTree=True):
-    root = DefaultMutableTreeNode("Visibility")
+    i18n = ToolsLocator.getI18nManager()
     
-    rootSelected = DefaultMutableTreeNode(DataGroup("Selected"))
-    rootSelectable = DefaultMutableTreeNode(DataGroup("Selectable"))
-    rootNotSelectable = DefaultMutableTreeNode(DataGroup("Not selectable"))
+    root = DefaultMutableTreeNode(i18n.getTranslation("_Selection"))
+    
+    rootSelected = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Selected")))
+    rootSelectable = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Selectable")))
+    rootNotSelectable = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Not_selectable")))
     
     root.insert(rootSelected, root.getChildCount())
     root.insert(rootSelectable, root.getChildCount())

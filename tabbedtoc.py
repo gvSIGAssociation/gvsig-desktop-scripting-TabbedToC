@@ -13,7 +13,7 @@ from sourceorder import setTreeAsSourceOrder
 #
 # http://desktop.arcgis.com/es/arcmap/10.3/map/working-with-arcmap/using-the-table-of-contents.htm
 #
-
+from addons.mobileforms.patchs.fixformpanel import fixFormPanelResourceLoader
 from org.gvsig.tools.swing.api import Component
 import visibilityorder
 reload(visibilityorder)
@@ -27,21 +27,31 @@ from org.gvsig.app import ApplicationLocator
 from org.gvsig.app.project.documents import DocumentManager
 from org.gvsig.app.project.documents.view import ViewManager
 from org.gvsig.tools.observer import Observer
+from org.gvsig.tools import ToolsLocator
+
+from gvsig import getResource
+from java.io import File
 
 class TabbedToC(FormPanel,Component):
   def __init__(self):
+    fixFormPanelResourceLoader()
+    i18nManager = ToolsLocator.getI18nManager()
+    i18nManager.addResourceFamily("text",File(getResource(__file__,"i18n")))
+  
     FormPanel.__init__(self,getResource(__file__,"tabbedtoc.xml"))
-    self.tabTOC.setToolTipTextAt(0,"Lista por orden de dibujo")
-    self.tabTOC.setToolTipTextAt(1,"Lista por fuente")
-    self.tabTOC.setToolTipTextAt(2,"Lista por visibilidad")
-    self.tabTOC.setToolTipTextAt(3,unicode("Lista por selección","utf-8"))
+    self.tabTOC.setToolTipTextAt(0,"_List_By_Drawing_Order")
+    self.tabTOC.setToolTipTextAt(1,"_List_By_Source")
+    self.tabTOC.setToolTipTextAt(2,"_List_By_Visibility")
+    self.tabTOC.setToolTipTextAt(3,"_List_By_Selection")
     self.__mapContext = None
     self.setPreferredSize(300,200)
+    self.translateUI()
 
   def getTab(self):
     return self.tabTOC
     
   def install(self, viewPanel):
+    
     self.pnlDrawingOrder.setLayout(BorderLayout())
     self.pnlDrawingOrder.add(viewPanel.getTOC(),BorderLayout.CENTER)
     viewPanel.getViewInformationArea().add(self,"TOC", 0, "ToC", None, "Table of contents")
@@ -53,7 +63,15 @@ class TabbedToC(FormPanel,Component):
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
     # TAB Selection
     setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
-            
+    
+  def translateUI(self):
+    #manager = ToolsSwingLocator.getToolsSwingManager()
+    from addons.mobileforms.patchs.fixtranslatecomponent import TranslateComponent as manager
+
+    components = [self.tabTOC]
+    for component in components:
+      manager.translate(component)
+      
 def main(*args):
     viewDoc = gvsig.currentView()
     viewPanel = viewDoc.getWindowOfView()

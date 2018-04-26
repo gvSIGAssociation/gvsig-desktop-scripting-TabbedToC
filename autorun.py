@@ -4,6 +4,7 @@ import gvsig
 
 from addons.TabbedToC.actions import selfRegister
 
+
 def main(*args):
   selfRegister()
 
