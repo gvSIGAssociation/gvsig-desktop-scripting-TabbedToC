@@ -116,6 +116,16 @@ class SelectionMouseAdapter(MouseAdapter):
         return
       #es = getExpansionState(self.tree) # save expansion tree state
       if x < 40:
+        v = layer.isVisible()
+        layer.setVisible(not v)
+        # TODO set state model
+        model = createTreeModel(self.mapContext)
+        self.tree.setModel(model)
+        self.tree.getModel().reload()
+        #setExpansionState(self.tree,es)
+        expandAllNodes(self.tree, 0, self.tree.getRowCount())
+        return
+      if x < 60:
         layer.getSelection().deselectAll()
         # TODO set state model
         model = createTreeModel(self.mapContext)
@@ -153,15 +163,19 @@ class SelectionCellRenderer(TreeCellRenderer):
         self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
 
         self.lblClean = JLabel()
-        self.pnlLayer.add(self.lblClean)
+
+        self.chkLayerVisibility = JCheckBox()
+        self.chkLayerVisibility.setOpaque(False)
         self.lblLayerName = JLabel()
         self.lblLayerIcon = JLabel()
         self.lblFeatureSelecteds = JLabel()
-        
+
+        self.pnlLayer.add(self.chkLayerVisibility)
+        self.pnlLayer.add(self.lblClean)
         self.pnlLayer.add(self.lblFeatureSelecteds)
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())+12)
+        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight()))
         self.lblUnknown = JLabel()
 
         ## Feature
@@ -191,7 +205,11 @@ class SelectionCellRenderer(TreeCellRenderer):
             else:
                 self.lblLayerName.setEnabled(False)
             self.lblClean.setIcon(getIconByName("edit-clear"))
-
+            self.chkLayerVisibility.setSelected(layer.isVisible())
+            if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
+                self.chkLayerVisibility.setEnabled(True)
+            else:
+                self.chkLayerVisibility.setEnabled(False)
             if layer.getDataStore() != None and layer.getDataStore().getSelection()!= None and layer.getDataStore().getSelection().getSize() !=0: # and layer.isVisible():
                 self.lblClean.setEnabled(True)
                 self.lblFeatureSelecteds.setText(str(layer.getDataStore().getSelection().getSize()))

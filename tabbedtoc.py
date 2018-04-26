@@ -13,7 +13,7 @@ from sourceorder import setTreeAsSourceOrder
 #
 # http://desktop.arcgis.com/es/arcmap/10.3/map/working-with-arcmap/using-the-table-of-contents.htm
 #
-from addons.mobileforms.patchs.fixformpanel import fixFormPanelResourceLoader
+from addons.TabbedToC.patchs.fixformpanel import fixFormPanelResourceLoader
 from org.gvsig.tools.swing.api import Component
 import visibilityorder
 reload(visibilityorder)
@@ -66,7 +66,7 @@ class TabbedToC(FormPanel,Component):
     
   def translateUI(self):
     #manager = ToolsSwingLocator.getToolsSwingManager()
-    from addons.mobileforms.patchs.fixtranslatecomponent import TranslateComponent as manager
+    from addons.TabbedToC.patchs.fixtranslatecomponent import TranslateComponent as manager
 
     components = [self.tabTOC]
     for component in components:

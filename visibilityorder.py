@@ -124,7 +124,7 @@ class VisibilityMouseAdapter(MouseAdapter):
             # TODO set state model
             model = createTreeModel(self.mapContext)
             self.tree.setModel(model)
-            #self.tree.getModel().reload()
+            self.tree.getModel().reload()
             #setExpansionState(self.tree,es)
             expandAllNodes(self.tree, 0, self.tree.getRowCount())
             return
@@ -167,7 +167,7 @@ class VisibilityCellRenderer(TreeCellRenderer):
         self.lblLayerName = JLabel()
         self.lblLayerName.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
         
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-9) #+2
+        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-5) #+2
         self.pnlLayer.add(self.lblLayerIcon)
         self.pnlLayer.add(self.lblLayerName)
         
