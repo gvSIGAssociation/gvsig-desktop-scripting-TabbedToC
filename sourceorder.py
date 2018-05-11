@@ -323,7 +323,6 @@ def buildReducedTreeFromLayers(root, layers):
     else:
         properIcon = getIconByName("librarybrowser-folder")
         folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
-    print path
     
     root.insert(folder, root.getChildCount())
     for pathLayer,layer in folderPath:
@@ -351,7 +350,7 @@ def createTreeModel(mapContext, reducedTree=True):
     
     params = layer.getDataStore().getParameters()
     getFile = getattr(params, "getFile", None)
-    if getFile() != None:
+    if getFile != None and getFile() !=None:
       getTable = getattr(params, "getTable", None)
       if getTable() !=None:
         layers.append((os.path.join(getFile().getAbsolutePath(),getTable()),layer))
