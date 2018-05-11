@@ -316,11 +316,14 @@ def buildReducedTreeFromLayers(root, layers):
     folderPath = folders[path]
     if not os.path.isdir(path):
         properIcon = getIconByPath(gvsig.getResource(__file__,"images","Database.png"))
+        if path=="":
+            i18n = ToolsLocator.getI18nManager()
+            path=i18n.getTranslation("_Services")
         folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
     else:
         properIcon = getIconByName("librarybrowser-folder")
         folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
-    
+    print path
     
     root.insert(folder, root.getChildCount())
     for pathLayer,layer in folderPath:
@@ -335,23 +338,31 @@ def createTreeModel(mapContext, reducedTree=True):
   root.insert(localLayers, root.getChildCount())
   root.insert(remoteLayers, root.getChildCount())
   layers = list()
+  remotes = list()
   for layer in iter(mapContext.deepiterator()):
     if layer.getDataStore() == None:
         # asumimos que es raster
-        layers.append((layer.getURI().getPath(),layer))
+        uri = layer.getURI()
+        if uri != None:
+            layers.append((uri.getPath(),layer))
+        else:
+            remotes.append((layer.getName(), layer))
         continue
     
     params = layer.getDataStore().getParameters()
     getFile = getattr(params, "getFile", None)
-    if getFile != None:
+    if getFile() != None:
       getTable = getattr(params, "getTable", None)
-      if getTable!=None:
+      if getTable() !=None:
         layers.append((os.path.join(getFile().getAbsolutePath(),getTable()),layer))
       else:
         layers.append((getFile().getAbsolutePath(),layer))
+
   layers.sort(cmp = lambda x,y: cmp(x[0],y[0]))
+  
   if reducedTree:
     buildReducedTreeFromLayers(localLayers,layers)
+    buildReducedTreeFromLayers(remoteLayers,remotes)
   else:
     for path,layer in layers:
       buildTreeFromPath(localLayers,path,layer)

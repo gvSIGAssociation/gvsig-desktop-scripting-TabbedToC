@@ -226,7 +226,12 @@ def createTreeModel(mapContext, reducedTree=True):
     root.insert(rootNotVisibility, root.getChildCount())
     
     for layer in iter(mapContext.deepiterator()):
-        insideViewportEnvelope = mapContext.getViewPort().getEnvelope().intersects(layer.getFullEnvelope())
+        try:
+            envelope=layer.getFullEnvelope()
+            insideViewportEnvelope = mapContext.getViewPort().getEnvelope().intersects(envelope)
+        except:
+            insideViewportEnvelope = True
+        
         if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible() and insideViewportEnvelope:
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
             rootWithVisibility.insert(newNode,0)
