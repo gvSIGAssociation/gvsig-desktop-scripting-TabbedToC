@@ -288,6 +288,10 @@ def addUpdateToCListener(id, mapContext, func):
 mapContextManager = None
 iconTheme = None
 
+def getIconByPath(pathname):
+    f = File(str(pathname))
+    return ImageIcon(ImageIO.read(f))
+    
 def getIconByName(iconName):
   global iconTheme
   if iconTheme == None:
@@ -315,7 +319,6 @@ def getIconFromLayer(layer):
 def expandAllNodes(tree, startingIndex, rowCount):
     for i in xrange(startingIndex,rowCount): 
         tree.expandRow(i)
-
     if tree.getRowCount()!=rowCount:
         expandAllNodes(tree, rowCount, tree.getRowCount())
         

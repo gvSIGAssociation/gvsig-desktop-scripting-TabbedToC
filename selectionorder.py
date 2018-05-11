@@ -193,7 +193,8 @@ class SelectionCellRenderer(TreeCellRenderer):
     def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
         uo = value.getUserObject()
         if isinstance(uo, DataGroup):
-            self.lblGroup.setText(uo.getName())
+            text = "[" + str(value.getChildCount()) +"] " + uo.getName()
+            self.lblGroup.setText(text)
             self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
             return self.lblGroup
         if isinstance(uo, DataLayer):
@@ -224,10 +225,13 @@ class SelectionCellRenderer(TreeCellRenderer):
             self.lblLayerName.setForeground(Color.BLACK)
             if layer.isEditing():
                 self.lblLayerName.setForeground(Color.RED)
-            if layer.isActive():
-                self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
+            #if layer.isActive():
+            if layer.isActive(): # and not font.isBold():
+                newfont = font.deriveFont(Font.BOLD)
+                self.lblLayerName.setFont(newfont)
             else:
-                self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
+                newfont = font.deriveFont(Font.PLAIN)
+                self.lblLayerName.setFont(newfont)
 
             return self.pnlLayer
         if isinstance(uo, FeatureDataLayerNode):

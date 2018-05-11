@@ -33,6 +33,8 @@ from tocutils import createToCContextMenu
 from tocutils import getIconByName
 from org.gvsig.tools import ToolsLocator
 
+from tocutils import getIconByPath
+
 def setTreeAsSourceOrder(tree, mapContext):
   updateAll(tree, mapContext)
  
@@ -68,7 +70,7 @@ class SourceMouseAdapter(MouseAdapter):
         y = event.getY()
         row = self.tree.getRowForLocation(x,y)
         path = self.tree.getPathForRow(row)
-        print "left mouseadapter:", x,y,row,path
+        #print "left mouseadapter:", x,y,row,path
 
         if path == None or path.getPathCount() != 4:
             return
@@ -156,7 +158,9 @@ class SourceCellRenderer(TreeCellRenderer):
     def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
         uo = value.getUserObject()
         if isinstance(uo, DataFolder):
-            self.lblFolder.setText(uo.getName())
+            #self.lblFolder.setText(uo.getName())
+            text = "[" + str(value.getChildCount()) +"] " + uo.getName()
+            self.lblFolder.setText(text)
             self.lblFolder.setPreferredSize(self.lblGroupPreferredSize)
             if uo.getIcon()!=None:
                 self.lblGroupIcon.setIcon(uo.getIcon())
@@ -170,6 +174,8 @@ class SourceCellRenderer(TreeCellRenderer):
             if uo.getIcon()!=None:
                 self.lblGroupIcon.setIcon(uo.getIcon())
             else:
+                #import pdb
+                #pdb.set_trace()
                 self.lblGroupIcon.setIcon(getIconByName("icon-folder-open"))
             
             return self.pnlFolder
@@ -193,9 +199,11 @@ class SourceCellRenderer(TreeCellRenderer):
             if layer.isActive() and font.isBold():
                 pass
             elif layer.isActive() and not font.isBold():
-                self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
+                newfont = font.deriveFont(Font.BOLD)
+                self.lblLayerName.setFont(newfont)
             else:
-                self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
+                newfont = font.deriveFont(Font.PLAIN)
+                self.lblLayerName.setFont(newfont)
             self.pnlLayer.repaint()
             return self.pnlLayer
         self.lblUnknown.setText("")
@@ -304,13 +312,18 @@ def buildReducedTreeFromLayers(root, layers):
   paths.sort()
 
   for path in paths:
-    #if True:
-    #properIcon = getIconByName("librarybrowser-folder")
-    #    folder = DefaultMutableTreeNode(DataFolder(path,path,properIcon))
-    #else:
-    folder = DefaultMutableTreeNode(DataGroup(path,path))
+    # select icon and insert in tree
+    folderPath = folders[path]
+    if not os.path.isdir(path):
+        properIcon = getIconByPath(gvsig.getResource(__file__,"images","Database.png"))
+        folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
+    else:
+        properIcon = getIconByName("librarybrowser-folder")
+        folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
+    
+    
     root.insert(folder, root.getChildCount())
-    for pathLayer,layer in folders[path]:
+    for pathLayer,layer in folderPath:
       leaf = DefaultMutableTreeNode(DataLayer(pathLayer,layer))
       folder.insert(leaf, folder.getChildCount())
       
@@ -324,7 +337,10 @@ def createTreeModel(mapContext, reducedTree=True):
   layers = list()
   for layer in iter(mapContext.deepiterator()):
     if layer.getDataStore() == None:
+        # asumimos que es raster
+        layers.append((layer.getURI().getPath(),layer))
         continue
+    
     params = layer.getDataStore().getParameters()
     getFile = getattr(params, "getFile", None)
     if getFile != None:

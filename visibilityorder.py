@@ -176,7 +176,8 @@ class VisibilityCellRenderer(TreeCellRenderer):
     def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
         uo = value.getUserObject()
         if isinstance(uo, DataGroup):
-            self.lblGroup.setText(uo.getName())
+            text = "[" + str(value.getChildCount()) +"] " + uo.getName()
+            self.lblGroup.setText(text)
             self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
             return self.lblGroup
         if isinstance(uo, DataLayer):
@@ -199,9 +200,11 @@ class VisibilityCellRenderer(TreeCellRenderer):
             if layer.isActive() and font.isBold():
                 pass
             elif layer.isActive() and not font.isBold():
-                self.lblLayerName.setFont(font.deriveFont(Font.BOLD))
+                newfont = font.deriveFont(Font.BOLD)
+                self.lblLayerName.setFont(newfont)
             else:
-                self.lblLayerName.setFont(font.deriveFont(-Font.BOLD))
+                newfont = font.deriveFont(Font.PLAIN)
+                self.lblLayerName.setFont(newfont)
             self.pnlLayer.repaint()
             return self.pnlLayer
         self.lblUnknown.setText("")
@@ -223,7 +226,8 @@ def createTreeModel(mapContext, reducedTree=True):
     root.insert(rootNotVisibility, root.getChildCount())
     
     for layer in iter(mapContext.deepiterator()):
-        if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
+        insideViewportEnvelope = mapContext.getViewPort().getEnvelope().intersects(layer.getFullEnvelope())
+        if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible() and insideViewportEnvelope:
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
             rootWithVisibility.insert(newNode,0)
             
@@ -231,7 +235,7 @@ def createTreeModel(mapContext, reducedTree=True):
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
             rootWithoutVisibility.insert(newNode,0)
 
-        elif layer.isVisible()==False:
+        else: # layer.isVisible()==False:
             newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
             rootNotVisibility.insert(newNode,0)
     
