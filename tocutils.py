@@ -304,6 +304,12 @@ def getIconFromLayer(layer):
   global iconTheme
   if layer == None or layer.getDataStore()==None:
       return None
+  if layer.getTocImageIcon() != None:
+      if iconTheme == None:
+          iconName = layer.getTocImageIcon()
+          iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
+          icon = iconTheme.get(iconName)      
+          return icon
   providerName = layer.getDataStore().getProviderName()
   if providerName != None:
     if mapContextManager == None:

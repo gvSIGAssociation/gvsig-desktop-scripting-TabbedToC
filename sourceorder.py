@@ -352,7 +352,7 @@ def createTreeModel(mapContext, reducedTree=True):
     getFile = getattr(params, "getFile", None)
     if getFile != None and getFile() !=None:
       getTable = getattr(params, "getTable", None)
-      if getTable() !=None:
+      if  getTable != None and getTable() !=None:
         layers.append((os.path.join(getFile().getAbsolutePath(),getTable()),layer))
       else:
         layers.append((getFile().getAbsolutePath(),layer))
