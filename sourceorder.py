@@ -41,6 +41,8 @@ def setTreeAsSourceOrder(tree, mapContext):
   tree.setCellRenderer(SourceCellRenderer(tree, mapContext))
   tree.addMouseListener(SourceMouseAdapter(tree,mapContext))
   addUpdateToCListener("SourceOrder", mapContext, UpdateListener(tree,mapContext))
+  tree.revalidate()
+  tree.repaint()
   
 class UpdateListener():
   def __init__(self, tree, mapContext):

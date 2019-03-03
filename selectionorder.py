@@ -4,7 +4,8 @@ import gvsig
 
 # TODO soport para el viewportlistener
 # http://downloads.gvsig.org/download/web/es/build/html/scripting_devel_guide/2.3/capturando_eventos.html
-
+import tocutils
+reload(tocutils)
 import os
 from org.gvsig.app.project.documents.view.toc import TocItemBranch
 
@@ -39,37 +40,34 @@ from org.gvsig.app.project.documents.view.toc import TocItemLeaf
 from org.gvsig.tools import ToolsLocator
 
 from javax.swing.tree import TreePath
-
 from org.gvsig.fmap.dal.feature.impl import DefaultFeatureStore
-
 from org.gvsig.fmap.mapcontext.layers import LayerListener
-
 from tocutils import createToCContextMenu
-
 from tocutils import addUpdateToCListener
-
 from tocutils import expandAllNodes
 from tocutils import getIconFromLayer
 from tocutils import getIconByName
-
 from org.gvsig.tools import ToolsLocator
-
-
+from tocutils import getExpansionState
+from tocutils import setExpansionState
 
 def setTreeAsSelectionOrder(tree, mapContext):
   updateAll(tree, mapContext)
-
   tree.setCellRenderer(SelectionCellRenderer(tree, mapContext))
   tree.addMouseListener(SelectionMouseAdapter(tree,mapContext))
   addUpdateToCListener("SelectionOrder", mapContext, UpdateListener(tree,mapContext))
 
 def updateAll(tree, mapContext):
     #print ">>> updateAll Order"
+    exp = getExpansionState(tree)
     model = createTreeModel(mapContext)
     tree.setModel(model)
     tree.getModel().reload()
-    expandAllNodes(tree, 0, tree.getRowCount())
-
+    #expandAllNodes(tree, 0, tree.getRowCount())
+    setExpansionState(tree, exp)
+    tree.revalidate()
+    tree.repaint()
+    
 class UpdateListener():
   def __init__(self, tree, mapContext):
     self.mapContext = mapContext
@@ -91,7 +89,7 @@ class SelectionMouseAdapter(MouseAdapter):
     row = self.tree.getRowForLocation(x,y)
     path = self.tree.getPathForRow(row)
     if path == None: # or path.getPathCount() != 3:
-        return
+      return
     node = path.getLastPathComponent()
     #print "node feature mouseadapter:", x,y,row,path
 
@@ -100,6 +98,7 @@ class SelectionMouseAdapter(MouseAdapter):
     if isinstance(node.getUserObject(), DataGroup):
       return
     if isinstance(node.getUserObject(), FeatureDataLayerNode):
+      es = getExpansionState(self.tree)
       uo = node.getUserObject()
       feature = uo.getFeature()
       if x>42 and x<62:
@@ -108,13 +107,15 @@ class SelectionMouseAdapter(MouseAdapter):
       elif x>62:
           envelope = feature.getDefaultGeometry().getEnvelope()
           self.mapContext.getViewPort().setEnvelope(envelope)
+      setExpansionState(self.tree,es)
+      return
     if isinstance(node.getUserObject(), DataLayer):
       layer = node.getUserObject().getLayer()
       #if SwingUtilities.isLeftMouseButton(event):
       #print "left mouseadapter:", x,y,row,path
       if x < 20:
         return
-      #es = getExpansionState(self.tree) # save expansion tree state
+      es = getExpansionState(self.tree) # save expansion tree state
       if x < 40:
         v = layer.isVisible()
         layer.setVisible(not v)
@@ -122,8 +123,8 @@ class SelectionMouseAdapter(MouseAdapter):
         model = createTreeModel(self.mapContext)
         self.tree.setModel(model)
         self.tree.getModel().reload()
-        #setExpansionState(self.tree,es)
-        expandAllNodes(self.tree, 0, self.tree.getRowCount())
+        setExpansionState(self.tree,es)
+        #expandAllNodes(self.tree, 0, self.tree.getRowCount())
         return
       if x < 60:
         layer.getSelection().deselectAll()
@@ -132,8 +133,8 @@ class SelectionMouseAdapter(MouseAdapter):
         self.tree.setModel(model)
         self.tree.getModel().reload()
         #self.tree.getModel().reload()
-        #setExpansionState(self.tree,es)
-        expandAllNodes(self.tree, 0, self.tree.getRowCount())
+        setExpansionState(self.tree,es)
+        #expandAllNodes(self.tree, 0, self.tree.getRowCount())
         return
       
       # Menu popup
@@ -141,8 +142,8 @@ class SelectionMouseAdapter(MouseAdapter):
       layer.setActive(not layer.isActive())
       self.tree.getModel().reload()
 
-      expandAllNodes(self.tree, 0, self.tree.getRowCount())
-      #setExpansionState(self.tree,es)
+      #expandAllNodes(self.tree, 0, self.tree.getRowCount())
+      setExpansionState(self.tree,es)
       if SwingUtilities.isRightMouseButton(event):
         # EVENT Right click"
         menu = createToCContextMenu(self.mapContext, layer)

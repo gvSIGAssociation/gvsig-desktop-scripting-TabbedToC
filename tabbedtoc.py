@@ -6,6 +6,9 @@ from gvsig.libs.formpanel import FormPanel
 
 from java.awt import BorderLayout
 
+import tocutils
+reload(tocutils)
+
 import sourceorder
 reload(sourceorder)
 from sourceorder import setTreeAsSourceOrder
@@ -59,10 +62,16 @@ class TabbedToC(FormPanel,Component):
     self.__mapContext = viewPanel.getMapControl().getMapContext()
     # TAB Source Order
     setTreeAsSourceOrder(self.treeSourceOrder, self.__mapContext)
+    self.treeSourceOrder.revalidate()
+    self.treeSourceOrder.repaint()
     # TAB Visibility 
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
+    self.treeVisibilityOrder.revalidate()
+    self.treeVisibilityOrder.repaint()
     # TAB Selection
     setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
+    self.treeSelectionOrder.revalidate()
+    self.treeSelectionOrder.repaint()
     
   def translateUI(self):
     #manager = ToolsSwingLocator.getToolsSwingManager()

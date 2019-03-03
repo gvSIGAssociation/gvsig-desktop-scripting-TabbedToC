@@ -62,6 +62,8 @@ def setTreeAsVisibilityOrder(tree, mapContext):
   vportlistener = VisibilityViewPortListener(tree, mapContext)
   mapContext.getViewPort().addViewPortListener(vportlistener)
   addUpdateToCListener("VisibilityOrder", mapContext, UpdateListener(tree,mapContext))
+  tree.revalidate()
+  tree.repaint()
   
 
 def updateAll(tree,mapContext):

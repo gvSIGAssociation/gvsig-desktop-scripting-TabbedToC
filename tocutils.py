@@ -8,7 +8,8 @@ from java.awt.event import ActionListener
 from javax.swing.tree import TreePath
 from javax.swing.tree import TreeNode
 from java.io import File
-
+from java.lang import StringBuffer, String, Integer
+from java.util import StringTokenizer
 from javax.swing.tree import DefaultTreeCellRenderer
 
 from javax.swing import JMenuItem
@@ -323,23 +324,42 @@ def getIconFromLayer(layer):
 
 
 def expandAllNodes(tree, startingIndex, rowCount):
-    for i in xrange(startingIndex,rowCount): 
+    for i in range(startingIndex,rowCount): 
         tree.expandRow(i)
     if tree.getRowCount()!=rowCount:
         expandAllNodes(tree, rowCount, tree.getRowCount())
         
-
-            
 def getExpansionState(tree):
     x = []
     for i in range(0, tree.getRowCount()):
-        if tree.isExpanded(i):
-            x.append(tree.getPathForRow(i)) #[1].toString()))
+      if tree.isExpanded(i):
+        x.append(tree.getPathForRow(i))
     return x
 
-def setExpansionState(tree, x):
-    for i in x:
-       tree.expandPath(i)
+def setExpansionState(tree, x, startingIndex=0):
+    rowCount = tree.getRowCount()
+    if not x:
+       return
+    for i in range(startingIndex, rowCount):
+      p = tree.getPathForRow(i)
+      for path in x:
+        if path.toString()==p.toString():
+          tree.expandPath(p)
+    if tree.getRowCount()!=rowCount:
+        setExpansionState(tree, x, rowCount)
+
+def printNode(node):
+    childCount = node.getChildCount()
+
+    print "---" + node.toString() + "---"
+
+    for i in range(0, childCount):
+        childNode = node.getChildAt(i)
+        if childNode.getChildCount() > 0:
+            printNode(childNode)
+        else:
+            print childNode.toString(), type(childNode)
+    print "+++" + node.toString() + "+++"
 
 def main(*args):
     pass
