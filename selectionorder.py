@@ -85,7 +85,6 @@ class SelectionMouseAdapter(MouseAdapter):
     self.mapContext = mapContext
     
   def mouseClicked(self, event):
-
     x = event.getX()
     y = event.getY()
     row = self.tree.getRowForLocation(x,y)
@@ -104,11 +103,11 @@ class SelectionMouseAdapter(MouseAdapter):
       uo = node.getUserObject()
       feature = uo.getFeature()
       if x>42 and x<62:
-          layer = node.getUserObject().getLayer()
-          layer.getDataStore().getFeatureSelection().deselect(feature)
+        layer = node.getUserObject().getLayer()
+        layer.getDataStore().getFeatureSelection().deselect(feature)
       elif x>62:
-          envelope = feature.getDefaultGeometry().getEnvelope()
-          self.mapContext.getViewPort().setEnvelope(envelope)
+        envelope = feature.getDefaultGeometry().getEnvelope()
+        self.mapContext.getViewPort().setEnvelope(envelope)
       setExpansionState(self.tree,es)
       return
     if isinstance(node.getUserObject(), DataLayer):
@@ -152,133 +151,136 @@ class SelectionMouseAdapter(MouseAdapter):
         menu.show(self.tree,x,y)
     
 class SelectionCellRenderer(TreeCellRenderer):
-    def __init__(self,tree,mapContext):
-        self.tree = tree
-        self.mapContext = mapContext
-        self.lblGroup = JLabel()
-        self.lblGroup.setBackground(Color(222,227,233)) #.BLUE.brighter())
-        self.lblGroup.setOpaque(True)
-        self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
-        self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
-        #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
-        self.pnlLayer = JPanel()
-        self.pnlLayer.setOpaque(False)
+  def __init__(self,tree,mapContext):
+    self.tree = tree
+    self.mapContext = mapContext
+    self.lblGroup = JLabel()
+    self.lblGroup.setBackground(Color(222,227,233)) #.BLUE.brighter())
+    self.lblGroup.setOpaque(True)
+    self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+    
+    self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
+    #h = self.lblGroupPreferredSize.getHeight()
+    #w = self.lblGroupPreferredSize.getWidth()
+    #self.lblGroupPreferredSize.setSize(h, w)
+    self.pnlLayer = JPanel()
+    self.pnlLayer.setOpaque(False)
 
-        self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
+    self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
 
-        self.lblClean = JLabel()
+    self.lblClean = JLabel()
 
-        self.chkLayerVisibility = JCheckBox()
-        self.chkLayerVisibility.setOpaque(False)
-        self.lblLayerName = JLabel()
-        self.lblLayerIcon = JLabel()
-        self.lblFeatureSelecteds = JLabel()
+    self.chkLayerVisibility = JCheckBox()
+    self.chkLayerVisibility.setOpaque(False)
+    self.lblLayerName = JLabel()
+    self.lblLayerIcon = JLabel()
+    self.lblFeatureSelecteds = JLabel()
 
-        self.pnlLayer.add(self.chkLayerVisibility)
-        self.pnlLayer.add(self.lblClean)
-        self.pnlLayer.add(self.lblFeatureSelecteds)
-        self.pnlLayer.add(self.lblLayerIcon)
-        self.pnlLayer.add(self.lblLayerName)
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight()))
-        self.lblUnknown = JLabel()
+    self.pnlLayer.add(self.chkLayerVisibility)
+    self.pnlLayer.add(self.lblClean)
+    self.pnlLayer.add(self.lblFeatureSelecteds)
+    self.pnlLayer.add(self.lblLayerIcon)
+    self.pnlLayer.add(self.lblLayerName)
+    self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-3)
+    self.lblUnknown = JLabel()
 
-        ## Feature
-        self.lblFeatureIcon = JLabel()
-        self.lblFeatureName = JLabel()
-        i18n = ToolsLocator.getI18nManager()
-        self.lblFeatureName.setText(i18n.getTranslation("_Feature"))
-        self.pnlFeature = JPanel()
-        self.pnlFeature.setOpaque(False)
-        self.pnlFeature.setLayout(FlowLayout(FlowLayout.LEFT))
-        self.pnlFeature.add(self.lblFeatureIcon)
-        self.pnlFeature.add(self.lblFeatureName)
-        
-    def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
-        uo = value.getUserObject()
-        if isinstance(uo, DataGroup):
-            text = "[" + str(value.getChildCount()) +"] " + uo.getName()
-            self.lblGroup.setText(text)
-            self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
-            return self.lblGroup
-        if isinstance(uo, DataLayer):
-            layer = uo.getLayer()
+    ## Feature
+    self.lblFeatureIcon = JLabel()
+    self.lblFeatureName = JLabel()
+    i18n = ToolsLocator.getI18nManager()
+    self.lblFeatureName.setText(i18n.getTranslation("_Feature"))
+    self.pnlFeature = JPanel()
+    self.pnlFeature.setOpaque(False)
+    self.pnlFeature.setLayout(FlowLayout(FlowLayout.LEFT))
+    self.pnlFeature.add(self.lblFeatureIcon)
+    self.pnlFeature.add(self.lblFeatureName)
+      
+  def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
+    uo = value.getUserObject()
+    if isinstance(uo, DataGroup):
+      text = "[" + str(value.getChildCount()) +"] " + uo.getName()
+      self.lblGroup.setText(text)
+      self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
+      return self.lblGroup
+    if isinstance(uo, DataLayer):
+      layer = uo.getLayer()
 
-            self.lblLayerName.setText(uo.getName())
-            self.lblLayerIcon.setIcon(getIconFromLayer(layer))
-            if layer.isVisible():
-                self.lblLayerName.setEnabled(True)
-            else:
-                self.lblLayerName.setEnabled(False)
-            self.lblClean.setIcon(getIconByName("edit-clear"))
-            self.chkLayerVisibility.setSelected(layer.isVisible())
-            if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
-                self.chkLayerVisibility.setEnabled(True)
-            else:
-                self.chkLayerVisibility.setEnabled(False)
-            if layer.getDataStore() != None and layer.getDataStore().getSelection()!= None and layer.getDataStore().getSelection().getSize() !=0: # and layer.isVisible():
-                self.lblClean.setEnabled(True)
-                self.lblFeatureSelecteds.setText(str(layer.getDataStore().getSelection().getSize()))
-                self.lblFeatureSelecteds.setEnabled(True)
-            else:
-                self.lblClean.setEnabled(False)
-                self.lblFeatureSelecteds.setText("0")
-                self.lblFeatureSelecteds.setEnabled(False)
-                
-            font = self.lblLayerName.getFont()
-            self.lblLayerName.setForeground(Color.BLACK)
-            if layer.isEditing():
-                self.lblLayerName.setForeground(Color.RED)
-            #if layer.isActive():
-            if layer.isActive(): # and not font.isBold():
-                newfont = font.deriveFont(Font.BOLD)
-                self.lblLayerName.setFont(newfont)
-            else:
-                newfont = font.deriveFont(Font.PLAIN)
-                self.lblLayerName.setFont(newfont)
+      self.lblLayerName.setText(uo.getName())
+      self.lblLayerIcon.setIcon(getIconFromLayer(layer))
+      if layer.isVisible():
+          self.lblLayerName.setEnabled(True)
+      else:
+          self.lblLayerName.setEnabled(False)
+      self.lblClean.setIcon(getIconByName("edit-clear"))
+      self.chkLayerVisibility.setSelected(layer.isVisible())
+      if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
+          self.chkLayerVisibility.setEnabled(True)
+      else:
+          self.chkLayerVisibility.setEnabled(False)
+      if layer.getDataStore() != None and layer.getDataStore().getSelection()!= None and layer.getDataStore().getSelection().getSize() !=0: # and layer.isVisible():
+          self.lblClean.setEnabled(True)
+          self.lblFeatureSelecteds.setText(str(layer.getDataStore().getSelection().getSize()))
+          self.lblFeatureSelecteds.setEnabled(True)
+      else:
+          self.lblClean.setEnabled(False)
+          self.lblFeatureSelecteds.setText("0")
+          self.lblFeatureSelecteds.setEnabled(False)
+          
+      font = self.lblLayerName.getFont()
+      self.lblLayerName.setForeground(Color.BLACK)
+      if layer.isEditing():
+          self.lblLayerName.setForeground(Color.RED)
+      #if layer.isActive():
+      if layer.isActive(): # and not font.isBold():
+          newfont = font.deriveFont(Font.BOLD)
+          self.lblLayerName.setFont(newfont)
+      else:
+          newfont = font.deriveFont(Font.PLAIN)
+          self.lblLayerName.setFont(newfont)
 
-            return self.pnlLayer
-        if isinstance(uo, FeatureDataLayerNode):
-            self.lblFeatureName.setText(uo.getFeature().toString())
-            self.lblFeatureIcon.setIcon(getIconByName("edit-clear"))
-            
-            return self.pnlFeature
-        self.lblUnknown.setText("")
-        self.lblUnknown.setPreferredSize(Dimension(0,0))
-        return self.lblUnknown
+      return self.pnlLayer
+    if isinstance(uo, FeatureDataLayerNode):
+      self.lblFeatureName.setText(uo.getFeature().toString())
+      self.lblFeatureIcon.setIcon(getIconByName("edit-clear"))
+      
+      return self.pnlFeature
+    self.lblUnknown.setText("")
+    self.lblUnknown.setPreferredSize(Dimension(0,0))
+    return self.lblUnknown
         
         
 def createTreeModel(mapContext, reducedTree=True):
-    i18n = ToolsLocator.getI18nManager()
-    
-    root = DefaultMutableTreeNode(i18n.getTranslation("_Selection"))
-    
-    rootSelected = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Selected")))
-    rootSelectable = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Selectable")))
-    rootNotSelectable = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Not_selectable")))
-    
-    root.insert(rootSelected, root.getChildCount())
-    root.insert(rootSelectable, root.getChildCount())
-    root.insert(rootNotSelectable, root.getChildCount())
+  i18n = ToolsLocator.getI18nManager()
+  
+  root = DefaultMutableTreeNode(i18n.getTranslation("_Selection"))
+  
+  rootSelected = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Selected")))
+  rootSelectable = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Selectable")))
+  rootNotSelectable = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Not_selectable")))
+  
+  root.insert(rootSelected, root.getChildCount())
+  root.insert(rootSelectable, root.getChildCount())
+  root.insert(rootNotSelectable, root.getChildCount())
 
-    for layer in iter(mapContext.deepiterator()):
-        store = layer.getDataStore()
-        if isinstance(store,DefaultFeatureStore) and store.getSelection().getSize() != 0:
-            newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+  for layer in iter(mapContext.deepiterator()):
+    store = layer.getDataStore()
+    if isinstance(store,DefaultFeatureStore) and store.getSelection().getSize() != 0:
+      newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
 
-            fset = layer.getDataStore().getSelection()
-            for f in fset:
-                newFeature = DefaultMutableTreeNode(FeatureDataLayerNode(layer.getName(),layer,f))
-                newNode.insert(newFeature, newNode.getChildCount())
-            rootSelected.insert(newNode, 0)
-        elif isinstance(store,DefaultFeatureStore):
-            newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootSelectable.insert(newNode,0)
-        else:
-            newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootNotSelectable.insert(newNode,0)
-        
-    model = DefaultTreeModel(root)
-    return model
+      fset = layer.getDataStore().getSelection()
+      for f in fset:
+          newFeature = DefaultMutableTreeNode(FeatureDataLayerNode(layer.getName(),layer,f))
+          newNode.insert(newFeature, newNode.getChildCount())
+      rootSelected.insert(newNode, 0)
+    elif isinstance(store,DefaultFeatureStore):
+      newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+      rootSelectable.insert(newNode,0)
+    else:
+      newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+      rootNotSelectable.insert(newNode,0)
+      
+  model = DefaultTreeModel(root)
+  return model
 
 class DataFolder(object):
   def __init__(self,name, path, icon=None):

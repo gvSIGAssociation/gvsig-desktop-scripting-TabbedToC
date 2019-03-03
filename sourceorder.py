@@ -75,7 +75,6 @@ class SourceMouseAdapter(MouseAdapter):
         self.mapContext = mapContext
 
     def mouseClicked(self, event):
-
         x = event.getX()
         y = event.getY()
         row = self.tree.getRowForLocation(x,y)
@@ -129,7 +128,6 @@ class SourceCellRenderer(TreeCellRenderer):
         self.lblFolder.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
         
         ### Folder
-        
         self.pnlFolder = JPanel()
         self.pnlFolder.setOpaque(False)
         self.pnlFolder.setLayout(FlowLayout(FlowLayout.LEFT))

@@ -86,11 +86,12 @@ class UpdateListener():
         
 class VisibilityViewPortListener(ViewPortListener):
   def __init__(self, tree,mapContext):
-      self.mapContext = mapContext
-      self.tree = tree
+    self.mapContext = mapContext
+    self.tree = tree
+    
   # Metodo obligatorio de ViewPortListener
   def backColorChanged(self,*args):
-      pass
+    pass
 
   # Metodo obligatorio de ViewPortListener
   def extentChanged(self,*args):
@@ -98,159 +99,160 @@ class VisibilityViewPortListener(ViewPortListener):
 
   # Metodo obligatorio de ViewPortListener
   def projectionChanged(self,*args):
-      pass
+    pass
       
 
 class VisibilityMouseAdapter(MouseAdapter):
-    def __init__(self,tree,mapContext):
-        MouseAdapter.__init__(self)
-        self.tree = tree
-        self.mapContext = mapContext
-    def mouseClicked(self, event):
-        x = event.getX()
-        y = event.getY()
-        row = self.tree.getRowForLocation(x,y)
-        path = self.tree.getPathForRow(row)
-        if path == None or path.getPathCount() != 3:
-            return
-        node = path.getLastPathComponent()
-        # exit for DataGroup objects
-        if node == None or isinstance(node.getUserObject(), DataGroup):
-            return
-        layer = node.getUserObject().getLayer()
-        #if SwingUtilities.isLeftMouseButton(event):
-        #print "left mouseadapter:", x,y,row,path
-        if x < 20:
-            return
-        es = getExpansionState(self.tree) # save expansion tree state
-        if x < 40:
-            v = layer.isVisible()
-            layer.setVisible(not v)
-            # TODO set state model
-            model = createTreeModel(self.mapContext)
-            self.tree.setModel(model)
-            self.tree.getModel().reload()
-            setExpansionState(self.tree,es)
-            #expandAllNodes(self.tree, 0, self.tree.getRowCount())
-            return
-        
-        # Menu popup
-        self.mapContext.getLayers().setAllActives(False)
-        layer.setActive(not layer.isActive())
-        self.tree.getModel().reload()
-        setExpansionState(self.tree,es)
-        #expandAllNodes(self.tree, 0, self.tree.getRowCount())
+  def __init__(self,tree,mapContext):
+    MouseAdapter.__init__(self)
+    self.tree = tree
+    self.mapContext = mapContext
+    
+  def mouseClicked(self, event):
+    x = event.getX()
+    y = event.getY()
+    row = self.tree.getRowForLocation(x,y)
+    path = self.tree.getPathForRow(row)
+    if path == None or path.getPathCount() != 3:
+      return
+    node = path.getLastPathComponent()
+    # exit for DataGroup objects
+    if node == None or isinstance(node.getUserObject(), DataGroup):
+      return
+    layer = node.getUserObject().getLayer()
+    #if SwingUtilities.isLeftMouseButton(event):
+    #print "left mouseadapter:", x,y,row,path
+    if x < 20:
+      return
+    es = getExpansionState(self.tree) # save expansion tree state
+    if x < 40:
+      v = layer.isVisible()
+      layer.setVisible(not v)
+      # TODO set state model
+      model = createTreeModel(self.mapContext)
+      self.tree.setModel(model)
+      self.tree.getModel().reload()
+      setExpansionState(self.tree,es)
+      #expandAllNodes(self.tree, 0, self.tree.getRowCount())
+      return
+    
+    # Menu popup
+    self.mapContext.getLayers().setAllActives(False)
+    layer.setActive(not layer.isActive())
+    self.tree.getModel().reload()
+    setExpansionState(self.tree,es)
+    #expandAllNodes(self.tree, 0, self.tree.getRowCount())
 
-        if SwingUtilities.isRightMouseButton(event):
-            # EVENT Right click"
-            menu = createToCContextMenu(self.mapContext, layer)
-            menu.show(self.tree,x,y)
-            return
+    if SwingUtilities.isRightMouseButton(event):
+      # EVENT Right click"
+      menu = createToCContextMenu(self.mapContext, layer)
+      menu.show(self.tree,x,y)
+      return
             
 class VisibilityCellRenderer(TreeCellRenderer):
-    def __init__(self,tree,mapContext):
-        self.tree = tree
-        self.mapContext = mapContext
-        self.lblGroup = JLabel()
-        self.lblGroup.setBackground(Color(222,227,233)) #.BLUE.brighter())
-        self.lblGroup.setOpaque(True)
-        self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
-        self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
-        #border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)
-        #border = BorderFactory.createLineBorder(Color(222,227,233).darker(),1)
-        #self.lblGroup.setBorder(border)
-        #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
-        self.pnlLayer = JPanel()
-        self.pnlLayer.setOpaque(False)
-        #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
+  def __init__(self,tree,mapContext):
+    self.tree = tree
+    self.mapContext = mapContext
+    self.lblGroup = JLabel()
+    self.lblGroup.setBackground(Color(222,227,233)) #.BLUE.brighter())
+    self.lblGroup.setOpaque(True)
+    self.lblGroup.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+    self.lblGroupPreferredSize = self.lblGroup.getPreferredSize()
+    #border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)
+    #border = BorderFactory.createLineBorder(Color(222,227,233).darker(),1)
+    #self.lblGroup.setBorder(border)
+    #self.lblGroupPreferredSize.setSize(30,200)#self.lblGroupPreferredSize.getHeight()+4, self.lblGroupPreferredSize.getWidth())
+    self.pnlLayer = JPanel()
+    self.pnlLayer.setOpaque(False)
+    #self.pnlLayer.setBorder(EmptyBorder(2,2,2,2))
 
-        self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
-        self.chkLayerVisibility = JCheckBox()
-        self.chkLayerVisibility.setOpaque(False)
-        self.pnlLayer.add(self.chkLayerVisibility)
-        self.lblLayerIcon = JLabel()
-        self.lblLayerName = JLabel()
-        self.lblLayerName.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
-        
-        self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-5) #+2
-        self.pnlLayer.add(self.lblLayerIcon)
-        self.pnlLayer.add(self.lblLayerName)
-        
-        self.lblUnknown = JLabel()
-        
-    def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
-        uo = value.getUserObject()
-        if isinstance(uo, DataGroup):
-            text = "[" + str(value.getChildCount()) +"] " + uo.getName()
-            self.lblGroup.setText(text)
-            self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
-            return self.lblGroup
-        if isinstance(uo, DataLayer):
-            layer = uo.getLayer()
-            self.lblLayerName.setText(layer.getName())
-            self.lblLayerIcon.setIcon(getIconFromLayer(layer))
-            self.chkLayerVisibility.setSelected(layer.isVisible())
-            if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
-                self.chkLayerVisibility.setEnabled(True)
-            else:
-                self.chkLayerVisibility.setEnabled(False)
+    self.pnlLayer.setLayout(FlowLayout(FlowLayout.LEFT))
+    self.chkLayerVisibility = JCheckBox()
+    self.chkLayerVisibility.setOpaque(False)
+    self.pnlLayer.add(self.chkLayerVisibility)
+    self.lblLayerIcon = JLabel()
+    self.lblLayerName = JLabel()
+    self.lblLayerName.setText("plddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+    
+    self.tree.setRowHeight(int(self.pnlLayer.getPreferredSize().getHeight())-3) #+2
+    self.pnlLayer.add(self.lblLayerIcon)
+    self.pnlLayer.add(self.lblLayerName)
+    
+    self.lblUnknown = JLabel()
+      
+  def getTreeCellRendererComponent(self, tree, value, selected, expanded, leaf, row, hasFocus):
+    uo = value.getUserObject()
+    if isinstance(uo, DataGroup):
+      text = "[" + str(value.getChildCount()) +"] " + uo.getName()
+      self.lblGroup.setText(text)
+      self.lblGroup.setPreferredSize(self.lblGroupPreferredSize)
+      return self.lblGroup
+    if isinstance(uo, DataLayer):
+      layer = uo.getLayer()
+      self.lblLayerName.setText(layer.getName())
+      self.lblLayerIcon.setIcon(getIconFromLayer(layer))
+      self.chkLayerVisibility.setSelected(layer.isVisible())
+      if layer.isWithinScale(self.mapContext.getScaleView()): # and layer.isVisible():
+        self.chkLayerVisibility.setEnabled(True)
+      else:
+        self.chkLayerVisibility.setEnabled(False)
 
-                            
-            self.lblLayerName.setForeground(Color.BLACK)
-            
-            font = self.lblLayerName.getFont()
-            self.lblLayerName.setForeground(Color.BLACK)
-            if layer.isEditing():
-                self.lblLayerName.setForeground(Color.RED)
-            if layer.isActive() and font.isBold():
-                pass
-            elif layer.isActive() and not font.isBold():
-                newfont = font.deriveFont(Font.BOLD)
-                self.lblLayerName.setFont(newfont)
-            else:
-                newfont = font.deriveFont(Font.PLAIN)
-                self.lblLayerName.setFont(newfont)
-            self.pnlLayer.repaint()
-            return self.pnlLayer
-        self.lblUnknown.setText("")
-        self.lblUnknown.setPreferredSize(Dimension(0,0))
+                      
+      self.lblLayerName.setForeground(Color.BLACK)
+      
+      font = self.lblLayerName.getFont()
+      self.lblLayerName.setForeground(Color.BLACK)
+      if layer.isEditing():
+        self.lblLayerName.setForeground(Color.RED)
+      if layer.isActive() and font.isBold():
+        pass
+      elif layer.isActive() and not font.isBold():
+        newfont = font.deriveFont(Font.BOLD)
+        self.lblLayerName.setFont(newfont)
+      else:
+        newfont = font.deriveFont(Font.PLAIN)
+        self.lblLayerName.setFont(newfont)
+      self.pnlLayer.repaint()
+      return self.pnlLayer
+    self.lblUnknown.setText("")
+    self.lblUnknown.setPreferredSize(Dimension(0,0))
 
-        return self.lblUnknown
+    return self.lblUnknown
         
         
 def createTreeModel(mapContext, reducedTree=True):
-    i18n = ToolsLocator.getI18nManager()
-    root = DefaultMutableTreeNode(i18n.getTranslation("_Visibility"))
+  i18n = ToolsLocator.getI18nManager()
+  root = DefaultMutableTreeNode(i18n.getTranslation("_Visibility"))
+  
+  rootWithVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Visible")))
+  rootWithoutVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Out_of_Scale_Range")))
+  rootNotVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Not_Visible")))
+  
+  root.insert(rootWithVisibility, root.getChildCount())
+  root.insert(rootWithoutVisibility, root.getChildCount())
+  root.insert(rootNotVisibility, root.getChildCount())
+  
+  for layer in iter(mapContext.deepiterator()):
+    try:
+      envelope=layer.getFullEnvelope()
+      insideViewportEnvelope = mapContext.getViewPort().getEnvelope().intersects(envelope)
+    except:
+      insideViewportEnvelope = True
     
-    rootWithVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Visible")))
-    rootWithoutVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Out_of_Scale_Range")))
-    rootNotVisibility = DefaultMutableTreeNode(DataGroup(i18n.getTranslation("_Not_Visible")))
-    
-    root.insert(rootWithVisibility, root.getChildCount())
-    root.insert(rootWithoutVisibility, root.getChildCount())
-    root.insert(rootNotVisibility, root.getChildCount())
-    
-    for layer in iter(mapContext.deepiterator()):
-        try:
-            envelope=layer.getFullEnvelope()
-            insideViewportEnvelope = mapContext.getViewPort().getEnvelope().intersects(envelope)
-        except:
-            insideViewportEnvelope = True
+    if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible() and insideViewportEnvelope:
+      newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+      rootWithVisibility.insert(newNode,0)
         
-        if layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible() and insideViewportEnvelope:
-            newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootWithVisibility.insert(newNode,0)
-            
-        elif not layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
-            newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootWithoutVisibility.insert(newNode,0)
+    elif not layer.isWithinScale(mapContext.getScaleView()) and layer.isVisible():
+      newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+      rootWithoutVisibility.insert(newNode,0)
 
-        else: # layer.isVisible()==False:
-            newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
-            rootNotVisibility.insert(newNode,0)
-    
-    model = DefaultTreeModel(root)
-    return model
+    else: # layer.isVisible()==False:
+      newNode = DefaultMutableTreeNode(DataLayer(layer.getName(),layer))
+      rootNotVisibility.insert(newNode,0)
+  
+  model = DefaultTreeModel(root)
+  return model
 
 class DataFolder(object):
   def __init__(self,name, path, icon=None):
@@ -270,8 +272,8 @@ class DataFolder(object):
     return False
 
 class DataGroup(DataFolder):
-    def __init__(self, name):
-        DataFolder.__init__(self, name, None)
+  def __init__(self, name):
+    DataFolder.__init__(self, name, None)
         
 class DataLayer(object):
   def __init__(self,path,layer):
@@ -291,7 +293,7 @@ class DataLayer(object):
     return True
     
 def main(*args):
-    import tabbedtoc
-    tabbedtoc.main()
+  import tabbedtoc
+  tabbedtoc.main()
     
     
