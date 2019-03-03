@@ -12,7 +12,7 @@ reload(tocutils)
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
 
-from tocutils import expandAllNodes
+#from tocutils import expandAllNodes
 
 from java.awt import Color
 from java.awt import Dimension
@@ -35,15 +35,30 @@ from org.gvsig.tools import ToolsLocator
 
 from tocutils import getIconByPath
 
+from tocutils import getExpansionState
+from tocutils import setExpansionState
+
 def setTreeAsSourceOrder(tree, mapContext):
   updateAll(tree, mapContext)
  
   tree.setCellRenderer(SourceCellRenderer(tree, mapContext))
   tree.addMouseListener(SourceMouseAdapter(tree,mapContext))
   addUpdateToCListener("SourceOrder", mapContext, UpdateListener(tree,mapContext))
-  tree.revalidate()
-  tree.repaint()
+  #tree.revalidate()
+  #tree.repaint()
   
+def updateAll(tree, mapContext):
+  exp = getExpansionState(tree)
+  model = createTreeModel(mapContext)
+  tree.setModel(model)
+  tree.getModel().reload()
+  #tree.revalidate()
+  #tree.repaint()
+  #expandAllNodes(tree, 0, tree.getRowCount())
+  setExpansionState(tree, exp)
+  #tree.revalidate()
+  #tree.repaint()
+    
 class UpdateListener():
   def __init__(self, tree, mapContext):
     self.mapContext = mapContext
@@ -51,15 +66,8 @@ class UpdateListener():
 
   def __call__(self):
     updateAll(self.tree, self.mapContext)
-    
-def updateAll(tree, mapContext):
-    #print ">>> updateAll Order"
-    model = createTreeModel(mapContext)
-    tree.setModel(model)
-    tree.getModel().reload()
-    tree.repaint()
-    expandAllNodes(tree, 0, tree.getRowCount())
 
+    
 class SourceMouseAdapter(MouseAdapter):
     def __init__(self,tree,mapContext):
         MouseAdapter.__init__(self)
@@ -84,7 +92,7 @@ class SourceMouseAdapter(MouseAdapter):
         #if SwingUtilities.isLeftMouseButton(event):
         if x < 46:
             return
-        #es = getExpansionState(self.tree) # save expansion tree state
+        es = getExpansionState(self.tree) # save expansion tree state
         if x < 62:
             v = layer.isVisible()
             layer.setVisible(not v)
@@ -93,8 +101,8 @@ class SourceMouseAdapter(MouseAdapter):
             self.tree.setModel(model)
             self.tree.getModel().reload()
             #self.tree.getModel().reload()
-            #setExpansionState(self.tree,es)
-            expandAllNodes(self.tree, 0, self.tree.getRowCount())
+            setExpansionState(self.tree,es)
+            #expandAllNodes(self.tree, 0, self.tree.getRowCount())
             return
         
         # Menu popup
@@ -102,9 +110,8 @@ class SourceMouseAdapter(MouseAdapter):
         self.mapContext.getLayers().setAllActives(False)
         layer.setActive(not layer.isActive())
         self.tree.getModel().reload()
-        #setExpansionState(self.tree,es)
-        expandAllNodes(self.tree, 0, self.tree.getRowCount())
-        #setExpansionState(self.tree,es)
+        setExpansionState(self.tree,es)
+        #expandAllNodes(self.tree, 0, self.tree.getRowCount())
         if SwingUtilities.isRightMouseButton(event):
             # EVENT Right click"
             menu = createToCContextMenu(self.mapContext, layer)
@@ -206,7 +213,7 @@ class SourceCellRenderer(TreeCellRenderer):
             else:
                 newfont = font.deriveFont(Font.PLAIN)
                 self.lblLayerName.setFont(newfont)
-            self.pnlLayer.repaint()
+            #self.pnlLayer.repaint()
             return self.pnlLayer
         self.lblUnknown.setText("")
         self.lblUnknown.setPreferredSize(Dimension(0,0))

@@ -50,28 +50,31 @@ from tocutils import addUpdateToCListener
 
 from javax.swing import BorderFactory
 
-from tocutils import expandAllNodes
+#from tocutils import expandAllNodes
 from tocutils import getIconFromLayer
 
 from javax.swing.border import EtchedBorder
 
+from tocutils import getExpansionState
+from tocutils import setExpansionState
+
 def setTreeAsVisibilityOrder(tree, mapContext):
-  updateAll(tree,mapContext)  
+  updateAll(tree,mapContext)
+  
   tree.setCellRenderer(VisibilityCellRenderer(tree, mapContext))
   tree.addMouseListener(VisibilityMouseAdapter(tree,mapContext))
   vportlistener = VisibilityViewPortListener(tree, mapContext)
   mapContext.getViewPort().addViewPortListener(vportlistener)
   addUpdateToCListener("VisibilityOrder", mapContext, UpdateListener(tree,mapContext))
-  tree.revalidate()
-  tree.repaint()
   
 
-def updateAll(tree,mapContext):
-    #print ">>> updateAll Visibility"
-    model = createTreeModel(mapContext)
-    tree.setModel(model)
-    tree.getModel().reload()
-    expandAllNodes(tree, 0, tree.getRowCount())
+def updateAll(tree, mapContext):
+  exp = getExpansionState(tree)
+  model = createTreeModel(mapContext)
+  tree.setModel(model)
+  tree.getModel().reload()
+  #expandAllNodes(tree, 0, tree.getRowCount())
+  setExpansionState(tree, exp)
 
 class UpdateListener():
   def __init__(self, tree, mapContext):
@@ -119,7 +122,7 @@ class VisibilityMouseAdapter(MouseAdapter):
         #print "left mouseadapter:", x,y,row,path
         if x < 20:
             return
-        #es = getExpansionState(self.tree) # save expansion tree state
+        es = getExpansionState(self.tree) # save expansion tree state
         if x < 40:
             v = layer.isVisible()
             layer.setVisible(not v)
@@ -127,17 +130,17 @@ class VisibilityMouseAdapter(MouseAdapter):
             model = createTreeModel(self.mapContext)
             self.tree.setModel(model)
             self.tree.getModel().reload()
-            #setExpansionState(self.tree,es)
-            expandAllNodes(self.tree, 0, self.tree.getRowCount())
+            setExpansionState(self.tree,es)
+            #expandAllNodes(self.tree, 0, self.tree.getRowCount())
             return
         
         # Menu popup
         self.mapContext.getLayers().setAllActives(False)
         layer.setActive(not layer.isActive())
         self.tree.getModel().reload()
-        #setExpansionState(self.tree,es)
-        expandAllNodes(self.tree, 0, self.tree.getRowCount())
-        #setExpansionState(self.tree,es)
+        setExpansionState(self.tree,es)
+        #expandAllNodes(self.tree, 0, self.tree.getRowCount())
+
         if SwingUtilities.isRightMouseButton(event):
             # EVENT Right click"
             menu = createToCContextMenu(self.mapContext, layer)

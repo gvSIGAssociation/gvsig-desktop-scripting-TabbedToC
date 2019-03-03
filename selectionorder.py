@@ -44,7 +44,7 @@ from org.gvsig.fmap.dal.feature.impl import DefaultFeatureStore
 from org.gvsig.fmap.mapcontext.layers import LayerListener
 from tocutils import createToCContextMenu
 from tocutils import addUpdateToCListener
-from tocutils import expandAllNodes
+#from tocutils import expandAllNodes
 from tocutils import getIconFromLayer
 from tocutils import getIconByName
 from org.gvsig.tools import ToolsLocator
@@ -57,17 +57,19 @@ def setTreeAsSelectionOrder(tree, mapContext):
   tree.addMouseListener(SelectionMouseAdapter(tree,mapContext))
   addUpdateToCListener("SelectionOrder", mapContext, UpdateListener(tree,mapContext))
 
+  
 def updateAll(tree, mapContext):
-    #print ">>> updateAll Order"
-    exp = getExpansionState(tree)
-    model = createTreeModel(mapContext)
-    tree.setModel(model)
-    tree.getModel().reload()
-    #expandAllNodes(tree, 0, tree.getRowCount())
-    setExpansionState(tree, exp)
-    tree.revalidate()
-    tree.repaint()
-    
+  exp = getExpansionState(tree)
+  model = createTreeModel(mapContext)
+  tree.setModel(model)
+  tree.getModel().reload()
+  #tree.revalidate()
+  #tree.repaint()
+  #expandAllNodes(tree, 0, tree.getRowCount())
+  setExpansionState(tree, exp)
+  #tree.revalidate()
+  #tree.repaint()
+
 class UpdateListener():
   def __init__(self, tree, mapContext):
     self.mapContext = mapContext
