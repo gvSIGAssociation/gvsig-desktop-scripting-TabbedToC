@@ -66,7 +66,8 @@ def setTreeAsVisibilityOrder(tree, mapContext):
   vportlistener = VisibilityViewPortListener(tree, mapContext)
   mapContext.getViewPort().addViewPortListener(vportlistener)
   addUpdateToCListener("VisibilityOrder", mapContext, UpdateListener(tree,mapContext))
-  
+  tree.revalidate()
+  tree.repaint()
 
 def updateAll(tree, mapContext):
   exp = getExpansionState(tree)
@@ -75,7 +76,9 @@ def updateAll(tree, mapContext):
   tree.getModel().reload()
   #expandAllNodes(tree, 0, tree.getRowCount())
   setExpansionState(tree, exp)
-
+  tree.revalidate()
+  tree.repaint()
+  
 class UpdateListener():
   def __init__(self, tree, mapContext):
     self.mapContext = mapContext
@@ -95,7 +98,7 @@ class VisibilityViewPortListener(ViewPortListener):
 
   # Metodo obligatorio de ViewPortListener
   def extentChanged(self,*args):
-    updateAll(self.tree,self.mapContext)
+    updateAll(self.tree, self.mapContext)
 
   # Metodo obligatorio de ViewPortListener
   def projectionChanged(self,*args):
@@ -279,7 +282,11 @@ class DataLayer(object):
   def __init__(self,path,layer):
     self.__path = path
     self.__layer = layer
-    self.__label = os.path.basename(self.__path)
+    if path != None:
+      self.__label = os.path.basename(self.__path)
+    else:
+      self.__label = None
+    
   def getName(self):
     return self.__label
   def getLayer(self):

@@ -62,14 +62,15 @@ class TabbedToC(FormPanel,Component):
     self.__mapContext = viewPanel.getMapControl().getMapContext()
     # TAB Source Order
     setTreeAsSourceOrder(self.treeSourceOrder, self.__mapContext)
-    self.treeSourceOrder.revalidate()
-    self.treeSourceOrder.repaint()
     # TAB Visibility 
     setTreeAsVisibilityOrder(self.treeVisibilityOrder, self.__mapContext)
-    self.treeVisibilityOrder.revalidate()
-    self.treeVisibilityOrder.repaint()
     # TAB Selection
     setTreeAsSelectionOrder(self.treeSelectionOrder, self.__mapContext)
+
+    self.treeSourceOrder.revalidate()
+    self.treeSourceOrder.repaint()
+    self.treeVisibilityOrder.revalidate()
+    self.treeVisibilityOrder.repaint()
     self.treeSelectionOrder.revalidate()
     self.treeSelectionOrder.repaint()
     

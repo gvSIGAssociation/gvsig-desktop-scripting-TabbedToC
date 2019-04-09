@@ -11,6 +11,7 @@ version =
 [Script]
 main = main
 Lang = python
+enable = true
 
 [properties]
 autorun.group.name = gvsig-base

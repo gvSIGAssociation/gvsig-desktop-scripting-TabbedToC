@@ -221,6 +221,7 @@ class UpdateToCListener(LayerListener,LayerCollectionListener):
   def __init__(self, id, callable):
     self.callable = callable
     self.id = id
+    self.fireEvent()
 
   def getId(self):
     return self.id

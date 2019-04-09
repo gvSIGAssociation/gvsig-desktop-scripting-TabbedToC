@@ -44,8 +44,8 @@ def setTreeAsSourceOrder(tree, mapContext):
   tree.setCellRenderer(SourceCellRenderer(tree, mapContext))
   tree.addMouseListener(SourceMouseAdapter(tree,mapContext))
   addUpdateToCListener("SourceOrder", mapContext, UpdateListener(tree,mapContext))
-  #tree.revalidate()
-  #tree.repaint()
+  tree.revalidate()
+  tree.repaint()
   
 def updateAll(tree, mapContext):
   exp = getExpansionState(tree)
@@ -56,8 +56,8 @@ def updateAll(tree, mapContext):
   #tree.repaint()
   #expandAllNodes(tree, 0, tree.getRowCount())
   setExpansionState(tree, exp)
-  #tree.revalidate()
-  #tree.repaint()
+  tree.revalidate()
+  tree.repaint()
     
 class UpdateListener():
   def __init__(self, tree, mapContext):
@@ -245,7 +245,10 @@ class DataLayer(object):
   def __init__(self,path,layer):
     self.__path = path
     self.__layer = layer
-    self.__label = os.path.basename(self.__path)
+    if path != None:
+      self.__label = os.path.basename(self.__path)
+    else:
+      self.__label = None
   def getName(self):
     return self.__label
   def getLayer(self):
