@@ -24,6 +24,9 @@ from org.gvsig.fmap.mapcontext.layers.operations import LayerCollection
 from org.gvsig.fmap.mapcontext import MapContextLocator
 from org.gvsig.fmap.mapcontext.layers import LayerListener
 from org.gvsig.tools.swing.api import ToolsSwingLocator
+from org.gvsig.app.project.documents.view.toc.gui import FPopupMenu
+from javax.swing.tree import DefaultMutableTreeNode
+from org.gvsig.app.project.documents.view.toc import AbstractTocContextMenuAction
 
 class TOCSimpleNode(TreeNode, ActionListener):
   def __init__(self, parent, icon=None):
@@ -172,7 +175,7 @@ class TOCTreeCellRenderer(DefaultTreeCellRenderer):
 
 
 class LayerMenuItem(JMenuItem, ActionListener):
-    def __init__(self, action, layer, tocItem,mapContext):
+    def __init__(self, action, layer, tocItem, mapContext):
         self.action = action
         self.layer = layer
         self.tocItem = tocItem
@@ -187,18 +190,32 @@ class LayerMenuItem(JMenuItem, ActionListener):
         self.action.execute(self.tocItem,layers)
 
 def createToCContextMenu(mapContext, selectedLayer):
+  # TOC.java
   menu = JPopupMenu()
   ep = ToolsLocator.getExtensionPointManager().get("View_TocActions")
+  from org.gvsig.app.project.documents.view.toc.actions import ZoomAlTemaTocMenuEntry
+  #from org.gvsig.app.project.documents.view.ViewManager import ContextMenuActionAdapterToExtensionBuilder
+  #ep.append("ZoomAlTema", "", ZoomAlTemaTocMenuEntry())
   tocItem = TocItemLeaf(None, selectedLayer.getName(),selectedLayer.getShapeType())
+
+  nodeValue = DefaultMutableTreeNode(tocItem)
+  #menu = FPopupMenu(mapContext, nodeValue)
+  #return menu
   activesLayers = mapContext.getLayers().getActives()
 
   actions = []
   for epx in ep.iterator():
       action = epx.create()
       actions.append([action,action.getGroupOrder(), action.getGroup(), action.getOrder()])
-
+  
   sortedActions =  sorted(actions, key = lambda x: (x[1], x[2],x[3]))
   group = None
+
+  z = ZoomAlTemaTocMenuEntry()
+  z.setMapContext(mapContext)
+  zitem = LayerMenuItem(z, selectedLayer,tocItem, mapContext)
+  menu.add(zitem)
+  menu.addSeparator()
   for actionList in sortedActions:
       action = actionList[0]
       if action.isVisible(tocItem, activesLayers): #(layer,)):
@@ -207,11 +224,16 @@ def createToCContextMenu(mapContext, selectedLayer):
           elif group != action.getGroup():
               menu.addSeparator()
           group = action.getGroup()
+         
+
+          if isinstance(action, AbstractTocContextMenuAction):
+              action.setMapContext(mapContext)
+
           if action.isEnabled(tocItem, activesLayers):
-              newItem = LayerMenuItem(action, selectedLayer,tocItem, mapContext)
+              newItem = LayerMenuItem(action, selectedLayer, tocItem, mapContext)
               menu.add(newItem)
           else:
-              newItem = LayerMenuItem(action,selectedLayer,tocItem, mapContext)
+              newItem = LayerMenuItem(action, selectedLayer, tocItem, mapContext)
               newItem.setEnabled(False)
               menu.add(newItem)
   return menu
@@ -342,6 +364,7 @@ def setExpansionState(tree, x, startingIndex=0):
     if not x:
        return
     for i in range(startingIndex, rowCount):
+        
       p = tree.getPathForRow(i)
       for path in x:
         if path.toString()==p.toString():
