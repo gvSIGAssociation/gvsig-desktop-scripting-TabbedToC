@@ -366,7 +366,8 @@ def createTreeModel(mapContext, reducedTree=True):
         layers.append((os.path.join(getFile().getAbsolutePath(),getTable()),layer))
       else:
         layers.append((getFile().getAbsolutePath(),layer))
-
+    else:
+      remotes.append((layer.getName(), layer))
   layers.sort(cmp = lambda x,y: cmp(x[0],y[0]))
   
   if reducedTree:
