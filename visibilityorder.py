@@ -26,7 +26,7 @@ from javax.swing.tree import DefaultTreeModel
 
 from org.gvsig.fmap.mapcontext import MapContextLocator
 from org.gvsig.tools.swing.api import ToolsSwingLocator
-
+from org.gvsig.andami import PluginServices
 
 from org.gvsig.fmap.mapcontext.events.listeners import ViewPortListener
 from javax.swing import SwingUtilities
@@ -151,7 +151,8 @@ class VisibilityMouseAdapter(MouseAdapter):
       menu = createToCContextMenu(self.mapContext, layer)
       menu.show(self.tree,x,y)
       return
-            
+    if PluginServices.getMainFrame() != None:
+      PluginServices.getMainFrame().enableControls()
 class VisibilityCellRenderer(TreeCellRenderer):
   def __init__(self,tree,mapContext):
     self.tree = tree

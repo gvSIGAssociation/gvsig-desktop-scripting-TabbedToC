@@ -11,7 +11,7 @@ reload(tocutils)
 
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
-
+from org.gvsig.andami import PluginServices
 #from tocutils import expandAllNodes
 
 from java.awt import Color
@@ -116,7 +116,8 @@ class SourceMouseAdapter(MouseAdapter):
             menu = createToCContextMenu(self.mapContext, layer)
             menu.show(self.tree,x,y)
             return
-            
+        if PluginServices.getMainFrame() != None:
+            PluginServices.getMainFrame().enableControls()
 class SourceCellRenderer(TreeCellRenderer):
     def __init__(self,tree,mapContext):
         self.tree = tree
