@@ -31,7 +31,8 @@ from org.gvsig.app import ApplicationLocator
 from org.gvsig.fmap.mapcontext.events.listeners import ViewPortListener
 from javax.swing import SwingUtilities
 from org.gvsig.app.project.documents.view import IContextMenuActionWithIcon
-
+from org.gvsig.fmap.mapcontext.layers import FLayer
+from org.gvsig.fmap.mapcontext.layers.operations import SingleLayer
 from javax.swing import JPopupMenu
 from java.awt.event import ActionListener
 from javax.swing import JMenuItem
@@ -236,6 +237,8 @@ def createTreeModel(mapContext, reducedTree=True):
   root.insert(rootNotVisibility, root.getChildCount())
   
   for layer in iter(mapContext.deepiterator()):
+    if not isinstance(layer, SingleLayer):
+      continue
     try:
       envelope=layer.getFullEnvelope()
       insideViewportEnvelope = mapContext.getViewPort().getEnvelope().intersects(envelope)

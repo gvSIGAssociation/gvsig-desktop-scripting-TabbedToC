@@ -11,7 +11,7 @@ from java.io import File
 from java.lang import StringBuffer, String, Integer
 from java.util import StringTokenizer
 from javax.swing.tree import DefaultTreeCellRenderer
-
+from org.gvsig.fmap.mapcontext.layers.operations import SingleLayer
 from javax.swing import JMenuItem
 from javax.swing import JPopupMenu
 from org.gvsig.app.project.documents.view import IContextMenuActionWithIcon
@@ -27,7 +27,7 @@ from org.gvsig.tools.swing.api import ToolsSwingLocator
 from org.gvsig.app.project.documents.view.toc.gui import FPopupMenu
 from javax.swing.tree import DefaultMutableTreeNode
 from org.gvsig.app.project.documents.view.toc import AbstractTocContextMenuAction
-
+from org.gvsig.fmap.mapcontext.layers import FLyrDefault
 class TOCSimpleNode(TreeNode, ActionListener):
   def __init__(self, parent, icon=None):
     self.__parent = parent
@@ -326,23 +326,25 @@ def getIconByName(iconName):
 def getIconFromLayer(layer):
   global mapContextManager
   global iconTheme
-  if layer == None or layer.getDataStore()==None:
-      return None
-  if layer.getTocImageIcon() != None:
+  if layer == None:
+    return None
+  if isinstance(layer, FLyrDefault) and layer.getTocImageIcon() != None:
       if iconTheme == None:
           iconName = layer.getTocImageIcon()
           iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
           icon = iconTheme.get(iconName)      
           return icon
-  providerName = layer.getDataStore().getProviderName()
-  if providerName != None:
-    if mapContextManager == None:
-      mapContextManager = MapContextLocator.getMapContextManager()
-    iconName = mapContextManager.getIconLayer(providerName)
-    if iconTheme == None:
-      iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
-    icon = iconTheme.get(iconName)
-    return icon
+          
+  if isinstance(layer, SingleLayer) and layer.getDataStore()!=None:
+    providerName = layer.getDataStore().getProviderName()
+    if providerName != None:
+      if mapContextManager == None:
+        mapContextManager = MapContextLocator.getMapContextManager()
+      iconName = mapContextManager.getIconLayer(providerName)
+      if iconTheme == None:
+        iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
+      icon = iconTheme.get(iconName)
+      return icon
   return None
 
 

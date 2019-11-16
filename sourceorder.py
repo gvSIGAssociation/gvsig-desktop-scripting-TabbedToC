@@ -37,7 +37,7 @@ from tocutils import getIconByPath
 
 from tocutils import getExpansionState
 from tocutils import setExpansionState
-
+from org.gvsig.fmap.mapcontext.layers.operations import SingleLayer
 def setTreeAsSourceOrder(tree, mapContext):
   updateAll(tree, mapContext)
  
@@ -349,6 +349,8 @@ def createTreeModel(mapContext, reducedTree=True):
   layers = list()
   remotes = list()
   for layer in iter(mapContext.deepiterator()):
+    if not isinstance(layer, SingleLayer):
+      continue
     if layer.getDataStore() == None:
         # asumimos que es raster
         uri = layer.getURI()
