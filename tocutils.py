@@ -255,10 +255,13 @@ class UpdateToCListener(LayerListener,LayerCollectionListener):
       pass
   
   def layerAdded(self, e):
-    layer = e.getAffectedLayer()
-    if isinstance(layer,LayerCollection):
-      layer.addLayerCollectionListener(self)
-    self.fireEvent()
+    try:
+      layer = e.getAffectedLayer()
+      if isinstance(layer,LayerCollection):
+        layer.addLayerCollectionListener(self)
+      self.fireEvent()
+    except:
+      self.fireEvent()
     
   def layerAdding(self, e):
     pass

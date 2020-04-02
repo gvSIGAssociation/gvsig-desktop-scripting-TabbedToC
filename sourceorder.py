@@ -172,7 +172,7 @@ class SourceCellRenderer(TreeCellRenderer):
             if uo.getIcon()!=None:
                 self.lblGroupIcon.setIcon(uo.getIcon())
             else:
-                self.lblGroupIcon.setIcon(getIconByName("icon-folder-open"))
+                self.lblGroupIcon.setIcon(getIconByName("librarybrowser-folder")) #icon-folder-open"))
             
             return self.lblFolder
         if isinstance(uo, DataGroup):
@@ -183,7 +183,7 @@ class SourceCellRenderer(TreeCellRenderer):
             else:
                 #import pdb
                 #pdb.set_trace()
-                self.lblGroupIcon.setIcon(getIconByName("icon-folder-open"))
+                self.lblGroupIcon.setIcon(getIconByName("librarybrowser-folder")) #icon-folder-open"))
             
             return self.pnlFolder
         if isinstance(uo, DataLayer):
