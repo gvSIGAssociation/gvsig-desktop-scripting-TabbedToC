@@ -17,7 +17,7 @@ from javax.swing import JPopupMenu
 from org.gvsig.app.project.documents.view import IContextMenuActionWithIcon
 from org.gvsig.app.project.documents.view.toc import TocItemLeaf
 from org.gvsig.tools import ToolsLocator
-
+from javax.swing import SwingUtilities
 from org.gvsig.fmap.mapcontext.layers import LayerCollectionListener
 from org.gvsig.fmap.mapcontext.layers.operations import LayerCollection
 
@@ -260,6 +260,9 @@ class UpdateToCListener(LayerListener,LayerCollectionListener):
       if isinstance(layer,LayerCollection):
         layer.addLayerCollectionListener(self)
       self.fireEvent()
+      #if not SwingUtilities.isEventDispatchThread():
+      #  SwingUtilities.invokeLater(self.fireEvent())
+      
     except:
       self.fireEvent()
     
