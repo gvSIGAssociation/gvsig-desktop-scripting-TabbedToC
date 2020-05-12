@@ -309,7 +309,13 @@ def addUpdateToCListener(id, mapContext, func):
     listeners = layer.getLayerListeners()
     for listener in listeners:
       if isinstance(listener,UpdateToCListener) and listener.getId()==id:
+        setRemoveRasterFlag = getattr(layer,"setRemoveRasterFlag", None)
+        if setRemoveRasterFlag != None:
+          removeRasterFlag = layer.isRemoveRasterFlag()
+          setRemoveRasterFlag(False)
         layer.removeLayerListener(listener)
+        if setRemoveRasterFlag != None:
+          setRemoveRasterFlag(removeRasterFlag)
     if isinstance(layer, LayerCollection):
       layer.addLayerCollectionListener(mylistener)
     layer.addLayerListener(mylistener)
