@@ -23,6 +23,8 @@ from javax.swing.border import EmptyBorder
 from javax.swing import JTree
 from javax.swing.tree import DefaultMutableTreeNode
 from javax.swing.tree import DefaultTreeModel
+from java.awt import Cursor
+import threading
 
 from org.gvsig.fmap.mapcontext import MapContextLocator
 from org.gvsig.tools.swing.api import ToolsSwingLocator
@@ -54,6 +56,9 @@ from tocutils import setExpansionState
 from gvsig import logger
 from gvsig import LOGGER_WARN,LOGGER_INFO,LOGGER_ERROR
 
+waitCursor = Cursor(Cursor.WAIT_CURSOR)
+defaultCursor = Cursor(Cursor.DEFAULT_CURSOR)
+
 def setTreeAsSelectionOrder(tree, mapContext):
   updateAll(tree, mapContext)
   tree.setCellRenderer(SelectionCellRenderer(tree, mapContext))
@@ -75,13 +80,51 @@ def updateAll(tree, mapContext):
   tree.revalidate()
   tree.repaint()
 
-class UpdateListener():
+class UpdateListener(object):
   def __init__(self, tree, mapContext):
     self.mapContext = mapContext
+    self.__previous_cursor = defaultCursor
     self.tree = tree
+    self.timer = None
+    self.model = None
+    self.exp = None
 
+  def __timer_noswing(self,*args):
+    #print "#### >>>>>>>>>>> timer noswing enter."
+    if self.timer != None:
+      self.timer.cancel()
+    self.__previous_cursor = self.tree.getCursor()
+    SwingUtilities.invokeLater(self.__set_wait_cursor)
+    self.exp = getExpansionState(self.tree)
+    self.model = createTreeModel(self.mapContext)
+    SwingUtilities.invokeLater(self.__timer_swing)
+    #print "#### >>>>>>>>>>> timer noswing exit."
+
+  def __timer_swing(self,*args):
+    #print "#### >>>>>>>>>>> timer swing1 enter."
+    if self.model != None:
+      #print "#### >>>>>>>>>>> timer swing2."
+      self.tree.setModel(self.model)
+      self.tree.getModel().reload()
+      setExpansionState(self.tree, self.exp)
+      self.tree.revalidate()
+      self.tree.repaint()
+    SwingUtilities.invokeLater(self.__restore_cursor)
+    #print "#### >>>>>>>>>>> timer swing1 exit."
+    
   def __call__(self):
-    updateAll(self.tree, self.mapContext)
+    #print "##### Posponenos la actualizacion enter"
+    if self.timer != None:
+      self.timer.cancel()
+    self.timer = threading.Timer(2.0, self.__timer_noswing)
+    self.timer.start()
+    #print "##### Posponenos la actualizacion exit"
+
+  def __set_wait_cursor(self):
+    self.tree.setCursor(waitCursor)
+    
+  def __restore_cursor(self):
+    self.tree.setCursor(self.__previous_cursor)
     
 class SelectionMouseAdapter(MouseAdapter):
   def __init__(self,tree,mapContext):
