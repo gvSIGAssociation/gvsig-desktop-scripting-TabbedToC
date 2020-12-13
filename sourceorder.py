@@ -348,10 +348,12 @@ def createTreeModel(mapContext, reducedTree=True):
   root.insert(remoteLayers, root.getChildCount())
   layers = list()
   remotes = list()
+
   for layer in iter(mapContext.deepiterator()):
-    if not isinstance(layer, SingleLayer):
+    getDataStore = getattr(layer,"getDataStore")
+    if( getDataStore == None:
       continue
-    if layer.getDataStore() == None:
+    if getDataStore() == None:
         # asumimos que es raster
         uri = layer.getURI()
         if uri != None:
@@ -360,7 +362,7 @@ def createTreeModel(mapContext, reducedTree=True):
             remotes.append((layer.getName(), layer))
         continue
     
-    params = layer.getDataStore().getParameters()
+    params = getDataStore().getParameters()
     getFile = getattr(params, "getFile", None)
     if getFile != None and getFile() !=None:
       getTable = getattr(params, "getTable", None)
@@ -371,7 +373,7 @@ def createTreeModel(mapContext, reducedTree=True):
     else:
       remotes.append((layer.getName(), layer))
   layers.sort(cmp = lambda x,y: cmp(x[0],y[0]))
-  
+
   if reducedTree:
     buildReducedTreeFromLayers(localLayers,layers)
     buildReducedTreeFromLayers(remoteLayers,remotes)
