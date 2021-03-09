@@ -350,8 +350,8 @@ def createTreeModel(mapContext, reducedTree=True):
   remotes = list()
 
   for layer in iter(mapContext.deepiterator()):
-    getDataStore = getattr(layer,"getDataStore")
-    if( getDataStore == None:
+    getDataStore = getattr(layer,"getDataStore",None)
+    if getDataStore == None:
       continue
     if getDataStore() == None:
         # asumimos que es raster

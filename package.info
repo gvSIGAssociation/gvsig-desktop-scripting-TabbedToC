@@ -17,6 +17,5 @@ categories=View
 description=New Table of Contents in the View to handle layers ordered by drawing, source, visibility or selection
 owner-url=
 buildNumber=14
-download-url=https\://github.com/gvSIGAssociation/gvsig-desktop-scripting-TabbedToC/releases/download/1.0.0-14/gvSIG-desktop-2.6.0-TabbedToC-1.0.0-14-testing-all-all-j1_7.gvspkg
 gvSIG-version=2.6.0
 name=Tabbed ToC
