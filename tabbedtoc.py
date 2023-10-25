@@ -3,6 +3,7 @@
 import gvsig
 from gvsig import getResource
 from gvsig.libs.formpanel import FormPanel
+from org.gvsig.tools.swing.api import ToolsSwingLocator
 
 from java.awt import BorderLayout
 
@@ -46,6 +47,13 @@ class TabbedToC(FormPanel,Component):
     self.tabTOC.setToolTipTextAt(1,"_List_By_Source")
     self.tabTOC.setToolTipTextAt(2,"_List_By_Visibility")
     self.tabTOC.setToolTipTextAt(3,"_List_By_Selection")
+
+    iconTheme = ToolsSwingLocator.getIconThemeManager().getCurrent()
+    self.tabTOC.setIconAt(0,iconTheme.get("tabbedtoc-drawingorder"))
+    self.tabTOC.setIconAt(1,iconTheme.get("tabbedtoc-sourceorder"))
+    self.tabTOC.setIconAt(2,iconTheme.get("tabbedtoc-visibilityorder"))
+    self.tabTOC.setIconAt(3,iconTheme.get("tabbedtoc-selectionorder"))
+
     self.__mapContext = None
     self.setPreferredSize(300,200)
     self.translateUI()

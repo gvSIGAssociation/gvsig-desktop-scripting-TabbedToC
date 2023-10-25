@@ -172,7 +172,7 @@ class SourceCellRenderer(TreeCellRenderer):
             if uo.getIcon()!=None:
                 self.lblGroupIcon.setIcon(uo.getIcon())
             else:
-                self.lblGroupIcon.setIcon(getIconByName("librarybrowser-folder")) #icon-folder-open"))
+                self.lblGroupIcon.setIcon(getIconByName("common-folder-open")) #icon-folder-open"))
             
             return self.lblFolder
         if isinstance(uo, DataGroup):
@@ -183,7 +183,7 @@ class SourceCellRenderer(TreeCellRenderer):
             else:
                 #import pdb
                 #pdb.set_trace()
-                self.lblGroupIcon.setIcon(getIconByName("librarybrowser-folder")) #icon-folder-open"))
+                self.lblGroupIcon.setIcon(getIconByName("common-folder-open")) #icon-folder-open"))
             
             return self.pnlFolder
         if isinstance(uo, DataLayer):
@@ -325,13 +325,14 @@ def buildReducedTreeFromLayers(root, layers):
     # select icon and insert in tree
     folderPath = folders[path]
     if not os.path.isdir(path):
-        properIcon = getIconByPath(gvsig.getResource(__file__,"images","Database.png"))
+        #properIcon = getIconByPath(gvsig.getResource(__file__,"images","tabbedtoc-database.png"))
+        properIcon = getIconByName("tabbedtoc-database")
         if path=="":
             i18n = ToolsLocator.getI18nManager()
             path=i18n.getTranslation("_Services")
         folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
     else:
-        properIcon = getIconByName("librarybrowser-folder")
+        properIcon = getIconByName("common-folder-closed")
         folder = DefaultMutableTreeNode(DataGroup(path,path,properIcon))
     
     root.insert(folder, root.getChildCount())
