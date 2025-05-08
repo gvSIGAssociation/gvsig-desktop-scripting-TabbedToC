@@ -93,15 +93,14 @@ class UpdateListener(object):
     #print "#### >>>>>>>>>>> timer noswing enter."
     if self.timer != None:
       self.timer.cancel()
-    self.__previous_cursor = self.tree.getCursor()
     SwingUtilities.invokeLater(self.__set_wait_cursor)
-    self.exp = getExpansionState(self.tree)
-    self.model = createTreeModel(self.mapContext)
     SwingUtilities.invokeLater(self.__timer_swing)
     #print "#### >>>>>>>>>>> timer noswing exit."
 
   def __timer_swing(self,*args):
     #print "#### >>>>>>>>>>> timer swing1 enter."
+    self.exp = getExpansionState(self.tree)
+    self.model = createTreeModel(self.mapContext)
     if self.model != None:
       #print "#### >>>>>>>>>>> timer swing2."
       self.tree.setModel(self.model)
@@ -109,7 +108,7 @@ class UpdateListener(object):
       setExpansionState(self.tree, self.exp)
       self.tree.revalidate()
       self.tree.repaint()
-    SwingUtilities.invokeLater(self.__restore_cursor)
+    self.__restore_cursor()
     #print "#### >>>>>>>>>>> timer swing1 exit."
     
   def __call__(self):
@@ -121,6 +120,7 @@ class UpdateListener(object):
     #print "##### Posponenos la actualizacion exit"
 
   def __set_wait_cursor(self):
+    self.__previous_cursor = self.tree.getCursor()
     self.tree.setCursor(waitCursor)
     
   def __restore_cursor(self):

@@ -65,7 +65,11 @@ class UpdateListener():
     self.tree = tree
 
   def __call__(self):
-    updateAll(self.tree, self.mapContext)
+    if SwingUtilities.isEventDispatchThread():
+      updateAll(self.tree, self.mapContext)
+    else:
+      SwingUtilities.invokeLater(lambda:updateAll(self.tree, self.mapContext))
+
 
     
 class SourceMouseAdapter(MouseAdapter):
